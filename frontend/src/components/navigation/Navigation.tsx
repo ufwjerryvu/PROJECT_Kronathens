@@ -7,9 +7,9 @@ const Navigation: React.FC = () => {
 
     return (
         <>
-            <header className='sticky top-0 z-50 py-2'>
+            <header className='sticky top-0 z-50'>
                 <div className='container'>
-                    <div className='navbar px-0'>
+                    <div className='navbar bg-base-100 py-4'>
                         <div className='navbar-start'>
                             <div className='dropdown'>
                                 <div tabIndex={0} role='button' className='btn btn-primary btn-circle lg:hidden mr-1'>
