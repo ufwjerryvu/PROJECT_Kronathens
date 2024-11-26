@@ -42,7 +42,8 @@ module.exports = {
           "secondary-focus": "#ea580c", // Orange 600
           "secondary-light": "#ffedd5", // Orange 100
           accent: "#06b6d4",           // Cyan 500
-          neutral: "#374151",          // Gray 700
+          neutral: "#6b7280",        // Using gray-500 color
+          "neutral-content": "#ffffff",
           "base-100": "#ffffff",
           "base-200": "#f3f4f6",
           "base-300": "#e5e7eb",
@@ -57,6 +58,8 @@ module.exports = {
           "secondary-light": "#7c2d12", // Orange 900
           accent: "#22d3ee",           // Cyan 400
           neutral: "#1f2937",          // Gray 800
+          neutral: "#6b7280",        // Using gray-500 color
+          "neutral-content": "#ffffff",
           "base-100": "#111827",       // Gray 900
           "base-200": "#1f2937",       // Gray 800
           "base-300": "#374151",       // Gray 700

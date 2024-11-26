@@ -7,7 +7,7 @@ const Navigation: React.FC = () => {
 
     return (
         <>
-            <header className='sticky top-0 z-50'>
+            <header className='sticky top-0 z-50 w-full bg-base-100'>
                 <div className='container'>
                     <div className='navbar bg-base-100 py-4'>
                         <div className='navbar-start'>
