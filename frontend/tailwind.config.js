@@ -17,7 +17,6 @@ module.exports = {
     },
     extend: {},
   },
-  // Enable hover and active states
   future: {
     hoverOnlyWhenSupported: true,
   },
@@ -25,7 +24,6 @@ module.exports = {
     'hover:bg-secondary-light',
     'active:bg-secondary-focus',
   ],
-  // Enable all variants including active
   variants: {
     extend: {
       backgroundColor: ['active', 'hover'],
@@ -37,21 +35,31 @@ module.exports = {
       {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
-          primary: "#f43f5e",
+          primary: "#2dd4bf",           // Teal 400
           "primary-content": "#ffffff",
-          secondary: "#0ea5e9",
+          secondary: "#f97316",         // Orange 500
           "secondary-content": "#ffffff",
-          "secondary-focus": "#0284c7",
-          "secondary-light": "#e0f2fe",
+          "secondary-focus": "#ea580c", // Orange 600
+          "secondary-light": "#ffedd5", // Orange 100
+          accent: "#06b6d4",           // Cyan 500
+          neutral: "#374151",          // Gray 700
+          "base-100": "#ffffff",
+          "base-200": "#f3f4f6",
+          "base-300": "#e5e7eb",
         },
         dark: {
           ...require("daisyui/src/theming/themes")["dark"],
-          primary: "#f87171",
-          "primary-content": "#1f2937",
-          secondary: "#38bdf8",
-          "secondary-content": "#1f2937",
-          "secondary-focus": "#0ea5e9",
-          "secondary-light": "#075985",
+          primary: "#5eead4",           // Teal 300
+          "primary-content": "#134e4a", // Teal 900
+          secondary: "#fb923c",         // Orange 400
+          "secondary-content": "#431407", // Orange 950
+          "secondary-focus": "#f97316", // Orange 500
+          "secondary-light": "#7c2d12", // Orange 900
+          accent: "#22d3ee",           // Cyan 400
+          neutral: "#1f2937",          // Gray 800
+          "base-100": "#111827",       // Gray 900
+          "base-200": "#1f2937",       // Gray 800
+          "base-300": "#374151",       // Gray 700
         }
       }
     ]

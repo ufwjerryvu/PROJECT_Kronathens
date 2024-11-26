@@ -1,10 +1,12 @@
 import React from 'react';
 
-interface GroupNameProps {
-    name: string;
-}
+interface HeaderProps{
+    name: string,
+    viewType: string,
+    onViewSwitch(): void
+};
 
-const Header: React.FC<GroupNameProps> = ({ name }) => {
+const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
     let separated = name.split(' ');
     const MAX_LENGTH = 2, INIT_INDEX = 0, ZERO = 0, ONE = 1;
 
@@ -14,6 +16,14 @@ const Header: React.FC<GroupNameProps> = ({ name }) => {
     } else {
         initials = separated[ZERO][INIT_INDEX];
     }
+
+    const renderViewIcon = (viewType: string) => {
+        if(viewType === 'card'){
+            return (<i className='bi bi-grid text-lg'></i>);
+        }else if(viewType === 'list'){
+            return (<i className='bi bi-list-task text-lg'></i>)
+        }
+    };
 
     return (
         <div className='bg-base-100 rounded-xl shadow-sm px-6 py-4'>
@@ -44,8 +54,9 @@ const Header: React.FC<GroupNameProps> = ({ name }) => {
                         <i className='bi bi-funnel text-base'></i>
                         Filter
                     </button>
-                    <button className='h-10 px-3 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200 whitespace-nowrap'>
-                        <i className='bi bi-grid text-lg'></i>
+                    <button className='h-10 px-3 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200 whitespace-nowrap'
+                            onClick={onViewSwitch}>
+                        {renderViewIcon(viewType)}
                         View
                     </button>
                     <button className="h-10 px-3 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60">
