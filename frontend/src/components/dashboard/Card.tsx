@@ -3,10 +3,12 @@ import React from 'react';
 interface CardProps {
     id: string;
     title: string;
+
     dateCreated: Date;
     dateModified: Date;
     completionPercentage: number;
     taskCount: number;
+
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
     onAddCollaborator: (id: string) => void;
@@ -15,26 +17,28 @@ interface CardProps {
 const Card = ({
     id,
     title,
-    taskCount,
-    completionPercentage,
+    
     dateCreated,
     dateModified,
+    completionPercentage,
+    taskCount,
+
     onEdit,
     onDelete,
     onAddCollaborator
 }: CardProps) => {
+    { /* Edits the information of the card */ }
     const handleEdit = (e: React.MouseEvent) => {
-        e.stopPropagation();
         onEdit(id);
     };
 
+    { /* Delete the checklist item/card and everything related to it */}
     const handleDelete = (e: React.MouseEvent) => {
-        e.stopPropagation();
         onDelete(id);
     };
 
+    {/* Add a collaborator */}
     const handleAddCollaborator = (e: React.MouseEvent) => {
-        e.stopPropagation();
         onAddCollaborator(id);
     };
 

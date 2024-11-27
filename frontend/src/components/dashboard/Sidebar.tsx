@@ -30,6 +30,7 @@ const Sidebar: React.FC = () => {
     { id: '20', name: 'Tech Support' },
   ]);
 
+  {/* Gets the intials of the group name */}
   const parseInitials = (name: string) => {
     let separated = name.split(' ');
 
