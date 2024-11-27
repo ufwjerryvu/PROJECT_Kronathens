@@ -14,7 +14,7 @@ interface CardProps {
     onAddCollaborator: (id: string) => void;
 }
 
-const Card = ({
+const CardItem = ({
     id,
     title,
     
@@ -27,17 +27,17 @@ const Card = ({
     onDelete,
     onAddCollaborator
 }: CardProps) => {
-    { /* Edits the information of the card */ }
+    /* Edits the information of the card */ 
     const handleEdit = (e: React.MouseEvent) => {
         onEdit(id);
     };
 
-    { /* Delete the checklist item/card and everything related to it */}
+    /* Delete the checklist item/card and everything related to it */
     const handleDelete = (e: React.MouseEvent) => {
         onDelete(id);
     };
 
-    {/* Add a collaborator */}
+    /* Add a collaborator */
     const handleAddCollaborator = (e: React.MouseEvent) => {
         onAddCollaborator(id);
     };
@@ -112,4 +112,4 @@ const Card = ({
     );
 };
 
-export default Card;
+export default CardItem;

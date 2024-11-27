@@ -3,21 +3,21 @@ import React from 'react';
 import ThemeToggler from './ThemeToggler.tsx';
 
 const Navigation: React.FC = () => {
-    const [isLoggedIn] = useState<boolean>(false);
+    const [isLoggedIn] = useState<boolean>(true);
 
     return (
         <>
             <header className='sticky top-0 z-50 w-full bg-base-100'>
                 <div className='container'>
                     <div className='navbar bg-base-100 py-4'>
-                        <div className='navbar-start'>
+                    <div className='navbar-start'>
                             <div className='dropdown'>
-                                <div tabIndex={0} role='button' className='btn btn-primary btn-circle lg:hidden mr-1 h-10 w-10 flex items-center justify-center'>
-                                    <i className='bi bi-list text-xl'></i>
+                                <div tabIndex={0} role='button' className='btn btn-primary btn-circle lg:hidden mr-1'>
+                                    <i className='bi bi-list text-2xl'></i>
                                 </div>
                                 <ul
                                     tabIndex={0}
-                                    className='menu menu-sm dropdown-content mt-1 p-2 shadow bg-base-200 rounded-box z-[1] w-52'>
+                                    className='menu menu-sm dropdown-content mt-1 p-2 shadow bg-base-200 rounded-box z-[1] w-52 p-2 shadow'>
                                     <li><a href='#!'>Dashboard</a></li>
                                     <li><a href='.'>Home</a></li>
                                     <li><a href='#!'>About</a></li>

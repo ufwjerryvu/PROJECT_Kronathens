@@ -27,17 +27,17 @@ const ListItem = ({
     onDelete,
     onAddCollaborator
 }: ListItemProps) => {
-    { /* Edits the information of the card */ }
+    /* Edits the information of the card */
     const handleEdit = (e: React.MouseEvent) => {
         onEdit(id);
     };
 
-    { /* Delete the checklist item/card and everything related to it */ }
+    /* Delete the checklist item/card and everything related to it */ 
     const handleDelete = (e: React.MouseEvent) => {
         onDelete(id);
     };
 
-    {/* Add a collaborator */ }
+    /* Add a collaborator */ 
     const handleAddCollaborator = (e: React.MouseEvent) => {
         onAddCollaborator(id);
     };

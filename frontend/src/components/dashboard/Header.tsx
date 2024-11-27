@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
     const filterRef = useRef<HTMLDivElement>(null);
     const sortRef = useRef<HTMLDivElement>(null);
 
-    {/* So that when we press outside the menu, it'll hide the menu */}
+    /* So that when we press outside the menu, it'll hide the menu */
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -29,22 +29,24 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    {/* Get the initials of the group name*/}
-    let separated = name.split(' ');
-    const MAX_LENGTH = 2, INIT_INDEX = 0, ZERO = 0, ONE = 1;
+    /* Get the initials of the group name*/
+    const parseInitials = (name: string) => {
+        let separated = name.split(' ');
 
-    let initials = '';
-    if (separated.length >= MAX_LENGTH && separated[ONE].length >= ONE) {
-        initials = separated[ZERO][INIT_INDEX] + separated[ONE][INIT_INDEX];
-    } else {
-        if (separated[ZERO].length < MAX_LENGTH) {
-            initials = initials = separated[ZERO][INIT_INDEX]
+        const MAX_LENGTH = 2, INIT_INDEX = 0, ZERO = 0, ONE = 1;
+
+        if (separated.length >= MAX_LENGTH) {
+            return (separated[ZERO][INIT_INDEX] + separated[ONE][INIT_INDEX])?.toUpperCase();
         } else {
-            initials = separated[ZERO][INIT_INDEX] + separated[ZERO][ONE];
+            if (separated[ZERO].length < MAX_LENGTH) {
+                return (separated[ZERO][INIT_INDEX])?.toUpperCase();
+            }
+
+            return (separated[ZERO][INIT_INDEX] + separated[ZERO][ONE])?.toUpperCase();
         }
     }
 
-    {/* The current icon for the view button based on the state of the view type */}
+    /* The current icon for the view button based on the state of the view type */
     const renderViewIcon = (viewType: string) => {
         if (viewType === 'card') {
             return (<i className='bi bi-grid text-lg'></i>);
@@ -53,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
         }
     };
 
-    {/* Filter and sort options for the drop-down */}
+    /* Filter and sort options for the drop-down */
     const filterOptions = [
         { id: 'all', label: 'All Items', icon: 'bi-collection' },
         { id: 'active', label: 'Active', icon: 'bi-play-circle' },
@@ -76,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                 <div className='flex items-center gap-3 flex-grow mr-auto w-full sm:w-auto'>
                     <div className='w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-inner flex-shrink-0'>
                         <span className='text-secondary-content text-sm font-semibold'>
-                            {initials}
+                            {parseInitials(name)}
                         </span>
                     </div>
                     <h1 className='text-lg text-base-content font-semibold tracking-tight truncate'>
@@ -95,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                     </div>
 
                     <div className='flex items-center gap-2 flex-shrink-0 ml-auto sm:ml-0'>
-                        {/* Filtering */ }
+                        { /* Filtering */}
                         <div className='relative' ref={filterRef}>
                             <button
                                 className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
@@ -114,9 +116,8 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                     {filterOptions.map((option) => (
                                         <button
                                             key={option.id}
-                                            className={`w-full px-4 py-2 text-sm text-left flex items-center gap-2 hover:bg-base-200 transition-colors ${
-                                                activeFilter === option.id ? 'text-secondary' : 'text-base-content'
-                                            }`}
+                                            className={`w-full px-4 py-2 text-sm text-left flex items-center gap-2 hover:bg-base-200 transition-colors ${activeFilter === option.id ? 'text-secondary' : 'text-base-content'
+                                                }`}
                                             onClick={() => {
                                                 setActiveFilter(option.id);
                                                 setIsFilterOpen(false);
@@ -132,8 +133,8 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                 </div>
                             )}
                         </div>
-                        
-                        {/* Sorting */ }
+
+                        { /* Sorting */}
                         <div className='relative' ref={sortRef}>
                             <button
                                 className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
@@ -152,9 +153,8 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                     {sortOptions.map((option) => (
                                         <button
                                             key={option.id}
-                                            className={`w-full px-4 py-2 text-sm text-left flex items-center gap-2 hover:bg-base-200 transition-colors ${
-                                                activeSort === option.id ? 'text-secondary' : 'text-base-content'
-                                            }`}
+                                            className={`w-full px-4 py-2 text-sm text-left flex items-center gap-2 hover:bg-base-200 transition-colors ${activeSort === option.id ? 'text-secondary' : 'text-base-content'
+                                                }`}
                                             onClick={() => {
                                                 setActiveSort(option.id);
                                                 setIsSortOpen(false);
@@ -170,10 +170,11 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                 </div>
                             )}
                         </div>
-                        
+
                         {/* View switch */}
                         <button
-                            className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
+                            className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm 
+                                text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
                             onClick={onViewSwitch}
                         >
                             {renderViewIcon(viewType)}
@@ -181,7 +182,9 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                         </button>
 
                         {/* Add checklist button */}
-                        <button className='h-9 px-2.5 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60'>
+                        <button className='h-9 px-2.5 bg-secondary text-secondary-content rounded-full flex 
+                                items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200
+                                hover:bg-opacity-80 active:bg-opacity-60'>
                             <i className='bi bi-plus-lg text-base'></i>
                             <span className='hidden sm:inline'>Checklist</span>
                         </button>
