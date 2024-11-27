@@ -19,26 +19,111 @@ const Box: React.FC = () => {
 
   const cards: CardInformation[] = [
     {
-      title: 'Food & Drinks Planning',
-      dateCreated: new Date('2024-11-15'),
+      title: 'Event Marketing',
+      dateCreated: new Date('2024-11-14'),
+      dateModified: new Date('2024-11-18'),
+      completionPercentage: 30,
+      taskCount: 5
+    },
+    {
+      title: 'Entertainment & Activities',
+      dateCreated: new Date('2024-11-08'),
+      dateModified: new Date('2024-11-22'),
+      completionPercentage: 50,
+      taskCount: 7
+    },
+    {
+      title: 'Transportation & Logistics',
+      dateCreated: new Date('2024-11-05'),
       dateModified: new Date('2024-11-20'),
-      completionPercentage: 40,
+      completionPercentage: 60,
+      taskCount: 9
+    },
+    {
+      title: 'Event Photography & Videography',
+      dateCreated: new Date('2024-11-07'),
+      dateModified: new Date('2024-11-21'),
+      completionPercentage: 80,
+      taskCount: 3
+    },
+    {
+      title: 'Security & Safety Measures',
+      dateCreated: new Date('2024-11-09'),
+      dateModified: new Date('2024-11-23'),
+      completionPercentage: 20,
       taskCount: 6
     },
     {
-      title: 'Venue Decoration',
+      title: 'Event Registration & Ticketing',
       dateCreated: new Date('2024-11-10'),
+      dateModified: new Date('2024-11-19'),
+      completionPercentage: 90,
+      taskCount: 4
+    },
+    {
+      title: 'Audio/Visual Setup',
+      dateCreated: new Date('2024-11-06'),
+      dateModified: new Date('2024-11-17'),
+      completionPercentage: 65,
+      taskCount: 5
+    },
+    {
+      title: 'Sponsorships & Partnerships',
+      dateCreated: new Date('2024-11-03'),
+      dateModified: new Date('2024-11-20'),
+      completionPercentage: 45,
+      taskCount: 6
+    },
+    {
+      title: 'Budget Management',
+      dateCreated: new Date('2024-11-04'),
       dateModified: new Date('2024-11-21'),
-      completionPercentage: 25,
+      completionPercentage: 55,
+      taskCount: 5
+    },
+    {
+      title: 'Staffing & Volunteers',
+      dateCreated: new Date('2024-11-02'),
+      dateModified: new Date('2024-11-19'),
+      completionPercentage: 70,
       taskCount: 8
     },
     {
-      title: 'Guest List & Invitations',
-      dateCreated: new Date('2024-11-12'),
-      dateModified: new Date('2024-11-19'),
-      completionPercentage: 75,
+      title: 'Event Schedule Creation',
+      dateCreated: new Date('2024-11-11'),
+      dateModified: new Date('2024-11-22'),
+      completionPercentage: 30,
       taskCount: 4
+    },
+    {
+      title: 'Event Branding & Signage',
+      dateCreated: new Date('2024-11-16'),
+      dateModified: new Date('2024-11-22'),
+      completionPercentage: 50,
+      taskCount: 7
+    },
+    {
+      title: 'Transportation Coordination for Guests',
+      dateCreated: new Date('2024-11-17'),
+      dateModified: new Date('2024-11-21'),
+      completionPercentage: 60,
+      taskCount: 3
+    },
+    {
+      title: 'Post-Event Survey & Feedback',
+      dateCreated: new Date('2024-11-13'),
+      dateModified: new Date('2024-11-19'),
+      completionPercentage: 85,
+      taskCount: 2
+    },
+    {
+      title: 'Clean-Up Crew Coordination',
+      dateCreated: new Date('2024-11-01'),
+      dateModified: new Date('2024-11-20'),
+      completionPercentage: 40,
+      taskCount: 6
     }
+    
   ];
 
   const handleEdit = (id: string) => {
@@ -138,7 +223,9 @@ const Box: React.FC = () => {
         </div>
 
         <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col'>
-          <Header name={'Office Christmas Barbecue'} viewType={viewType} onViewSwitch={handleViewSwitch}/>
+          <div className='w-full bg-base-200 pb-3'>
+            <Header name={'Office Christmas Barbecue'} viewType={viewType} onViewSwitch={handleViewSwitch}/>
+          </div>
           <div className='flex-1 overflow-auto auto-hide-scrollbar'>
             {renderChecklists()}
           </div>
