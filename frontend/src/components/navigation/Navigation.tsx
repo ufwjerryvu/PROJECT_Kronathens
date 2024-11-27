@@ -3,14 +3,14 @@ import React from 'react';
 import ThemeToggler from './ThemeToggler.tsx';
 
 const Navigation: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isLoggedIn] = useState<boolean>(true);
 
     return (
         <>
-            <header className='sticky top-0 z-50'>
+            <header className='sticky top-0 z-50 w-full bg-base-100'>
                 <div className='container'>
                     <div className='navbar bg-base-100 py-4'>
-                        <div className='navbar-start'>
+                    <div className='navbar-start'>
                             <div className='dropdown'>
                                 <div tabIndex={0} role='button' className='btn btn-primary btn-circle lg:hidden mr-1'>
                                     <i className='bi bi-list text-2xl'></i>
@@ -28,7 +28,7 @@ const Navigation: React.FC = () => {
                             </style>
 
                             <a href='.' className='text-3xl font-semibold' style={{ fontFamily: 'Gloock, serif' }}>
-                                Krothena
+                                Kronathens
                             </a>
                         </div>
                         <div className='navbar-center hidden lg:flex'>
@@ -39,19 +39,24 @@ const Navigation: React.FC = () => {
                             </ul>
                         </div>
                         <div className='navbar-end'>
-                            <div className='flex items-center gap-5'>
+                            <div className='flex items-center gap-4'>
                                 <ThemeToggler />
                                 {
                                     !isLoggedIn ? (
-                                        <button className="btn h-11 min-h-[2rem] normal-case rounded-full px-6
+                                        <button className='btn h-10 min-h-[2.5rem] normal-case rounded-full px-6
                                         bg-primary hover:bg-primary/80 
-                                        text-primary-content border-none">
+                                        text-primary-content border-none'>
                                             Sign in
                                         </button>
                                     ) : (
-                                        <button className="h-9 w-9 flex items-center justify-center">
-                                            <i className="bi bi-person text-[37px]"></i>
-                                        </button>
+                                        <div className='flex items-center gap-4'>
+                                            <button className='h-10 w-10 flex items-center justify-center'>
+                                                <i className='bi bi-bell text-2xl'></i>
+                                            </button>
+                                            <button className='h-10 w-10 flex items-center justify-center'>
+                                                <i className='bi bi-person text-[2.0rem]'></i>
+                                            </button>
+                                        </div>
                                     )
                                 }
                             </div>
