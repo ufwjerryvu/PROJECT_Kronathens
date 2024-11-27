@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
             setSelectedGroupId(lastGroup.id);
             onGroupSelect(lastGroup.id);
         }
-    }, [groups, onGroupSelect]);
+    }, [groups]);
 
     return (
         <div className='h-full flex flex-col p-2 pt-4'>
