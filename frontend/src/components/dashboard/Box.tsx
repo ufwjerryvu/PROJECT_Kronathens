@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header.tsx';
 import Card from './CardItem.tsx';
 import ListItem from './ListItem.tsx';
@@ -17,6 +17,14 @@ const Box: React.FC = () => {
     /* Groups will happen to store card/list items and their meta information */
     const [groups, setGroups] = useState<GroupInformation[]>([]);
     const [currentGroup, setCurrentGroup] = useState<GroupInformation>();
+
+    /* On mount, pick the first group */
+    useEffect(() => {
+        const FIRST = 0;
+        if(groups.length > 0){
+            setCurrentGroup(groups[FIRST]);
+        }
+    }, [])
 
     /* Edit the card */
     const handleChecklistItemEdit = (id: string) => {

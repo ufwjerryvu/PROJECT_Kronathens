@@ -12,6 +12,14 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) => {
     const [selectedGroupId, setSelectedGroupId] = useState<string>('');
 
+    /* Set to the first group on mount */
+    useEffect(() => {
+        const FIRST = 0;
+        if(groups.length > 0){
+            setSelectedGroupId(groups[FIRST].id);
+        }
+    }, [])
+
     /* Gets the intials of the group name */
     const parseInitials = (name: string) => {
         let separated = name.split(' ');
@@ -114,11 +122,12 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                             <div className='flex justify-end'>
                                 <form method='dialog'>
                                     <button className='px-3 py-2 bg-green-600 text-sm text-white rounded-full transition-all
-                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60'
+                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:bg-neutral-500'
                                         onClick={() => {
                                             onAddGroup(name, description);
                                             clearForm();
                                         }}
+                                        disabled={!name.trim()}
                                     >Confirm</button>
                                 </form>
                             </div>
