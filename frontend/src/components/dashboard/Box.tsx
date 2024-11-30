@@ -10,10 +10,10 @@ import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts
 
 const Box: React.FC = () => {
     type ViewType = 'card' | 'list';
-    
+
     /* Set box view type either as card or list for now, might add more later. Who knows? */
     const [viewType, setViewType] = useState<ViewType>('card');
-    
+
     /* Groups will happen to store card/list items and their meta information */
     const [groups, setGroups] = useState<GroupInformation[]>([]);
     const [currentGroup, setCurrentGroup] = useState<GroupInformation>();
@@ -21,7 +21,7 @@ const Box: React.FC = () => {
     /* On mount, pick the first group */
     useEffect(() => {
         const FIRST = 0;
-        if(groups.length > 0){
+        if (groups.length > 0) {
             setCurrentGroup(groups[FIRST]);
         }
     }, [])
@@ -48,7 +48,7 @@ const Box: React.FC = () => {
 
     /* Add a new group to the existing list */
     const handleConfirmGroupCreation = (name: string, description: string) => {
-        const newGroup : GroupInformation = {
+        const newGroup: GroupInformation = {
             id: Date.now().toString(),
             name: name,
             description: description,
@@ -142,7 +142,7 @@ const Box: React.FC = () => {
       `}</style>
             <div className='flex h-[calc(100vh-6rem)] rounded-3xl bg-base-200'>
                 <div className='flex-[0.25] min-w-[200px] bg-base-300 p-4 rounded-l-3xl overflow-hidden'>
-                    <Sidebar groups={groups} onAddGroup={handleConfirmGroupCreation} onGroupSelect={handleGroupSelection}/>
+                    <Sidebar groups={groups} onAddGroup={handleConfirmGroupCreation} onGroupSelect={handleGroupSelection} />
                 </div>
 
                 <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col'>
@@ -159,6 +159,54 @@ const Box: React.FC = () => {
                             <EmptyState />
                         </div>)}
                 </div>
+
+                {/* Create checklist modal */}
+                <div className='relative'>
+                    <dialog id='create_checklist_form' className='modal'>
+                        <div className='modal-box max-w-sm md:max-w-md'>
+                            <form method='dialog'>
+                                <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
+                            </form>
+                            <h3 className='font-bold text-lg pb-6 text-center'>Create a new checklist</h3>
+                            <div className='space-y-4 pb-8'>
+                                <input
+                                    type='text'
+                                    placeholder='Optional: enter your checklist name here'
+                                    className='input input-bordered w-full rounded-3xl'
+                                />
+                                <p className='text-xs px-5'> <b>Note:</b> your checklist's title will be set to today's date if a name is not provided</p>
+                                <textarea
+                                    placeholder='Optional: enter a short description of the group (less than 80 characters).'
+                                    className='textarea textarea-bordered textarea-md w-full rounded-3xl text-md h-32'
+                                >
+                                </textarea>
+                            </div>
+                            <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2'>
+                                <div className='flex justify-start'>
+                                    <form method='dialog'>
+                                        <button className='px-4 py-2 bg-neutral-500 text-sm text-white rounded-full
+                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60'>Close</button>
+                                    </form>
+                                </div>
+                                <div className='flex justify-end'>
+                                    <form method='dialog'>
+                                        <button className='px-3 py-2 bg-green-600 text-sm text-white rounded-full transition-all
+                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:bg-neutral-500'
+                                            onClick={() => {
+                                                const dialog = document.getElementById('create_checklist_form')! as HTMLDialogElement;
+                                                dialog.close();
+                                            }}
+                                        >Confirm</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <form method='dialog' className='modal-backdrop'>
+                            <button></button>
+                        </form>
+                    </dialog>
+                </div>
+
             </div>
         </div>
     );

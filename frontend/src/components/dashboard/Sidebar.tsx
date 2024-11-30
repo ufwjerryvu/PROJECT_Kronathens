@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
     /* Set to the first group on mount */
     useEffect(() => {
         const FIRST = 0;
-        if(groups.length > 0){
+        if (groups.length > 0) {
             setSelectedGroupId(groups[FIRST].id);
         }
     }, [])
@@ -73,95 +73,145 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
         }
     }, [groups]);
 
+    /* Checking window size */
+    const [showAddLabel, setShowAddLabel] = React.useState(true);
+    const sidebarRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const checkWidth = () => {
+            if (sidebarRef.current) {
+                setShowAddLabel(sidebarRef.current.offsetWidth > 250);
+            }
+        };
+
+        checkWidth();
+        window.addEventListener('resize', checkWidth);
+        return () => window.removeEventListener('resize', checkWidth);
+    }, []);
+
     return (
-        <div className='h-full flex flex-col p-2 pt-4'>
-            {/* Header of the sidebar */}
-            <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-lg font-semibold px-2'>All Groups</h2>
+        <div ref={sidebarRef} className="h-full flex flex-col p-2 pt-4">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 px-2">
+                <h2 className="text-lg font-semibold text-base-content/80 truncate">All Groups</h2>
                 <button
                     onClick={handleAddGroupButton}
-                    className='h-9 px-2.5 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm 
-                        font-medium whitespace-nowrap transition-all duration-200 hover:opacity-80 active:opacity-60'
+                    className="h-9 px-3 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm 
+                            font-medium transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 flex-shrink-0"
                 >
-                    <i className='bi bi-plus-lg text-base'></i>
-                    <span className='hidden sm:inline'>Add</span>
+                    <i className="bi bi-plus-lg text-base" />
+                    {showAddLabel && <span>Add</span>}
                 </button>
             </div>
 
-            {/* Create group modal */}
-            <div className='relative'>
-                <dialog id='create_group_form' className='modal'>
-                    <div className='modal-box max-w-sm md:max-w-md'>
-                        <form method='dialog'>
-                            <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
-                        </form>
-                        <h3 className='font-bold text-lg pb-6 text-center'>Create a new group</h3>
-                        <div className='space-y-4 pb-8'>
-                            <input
-                                type='text'
-                                placeholder='Enter your group name here'
-                                className='input input-bordered w-full rounded-3xl'
-                                onChange={handleNameChange}
-                                value={name}
-                            />
-                            <textarea
-                                placeholder='Optional: enter a short description of the group (less than 80 characters).'
-                                className='textarea textarea-bordered textarea-md w-full rounded-3xl text-md h-32'
-                                onChange={handleDescriptionChange}
-                                value={description}
-                            >
-                            </textarea>
-                        </div>
-                        <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2'>
-                            <div className='flex justify-start'>
-                                <form method='dialog'>
-                                    <button className='px-4 py-2 bg-neutral-500 text-sm text-white rounded-full
-                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60'>Close</button>
-                                </form>
-                            </div>
-                            <div className='flex justify-end'>
-                                <form method='dialog'>
-                                    <button className='px-3 py-2 bg-green-600 text-sm text-white rounded-full transition-all
-                                    duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:bg-neutral-500'
-                                        onClick={() => {
-                                            onAddGroup(name, description);
-                                            clearForm();
-                                        }}
-                                        disabled={!name.trim()}
-                                    >Confirm</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <form method='dialog' className='modal-backdrop'>
-                        <button></button>
-                    </form>
-                </dialog>
-            </div>
-
-            {/* Display all groups */}
-            <div className='overflow-y-auto pt-3 auto-hide-scrollbar'>
-                <ul>
+            {/* Groups List */}
+            <div className="overflow-y-auto flex-1 -mx-2 px-2">
+                <ul className="space-y-1.5">
                     {groups.map((group) => (
-                        <li key={group.id} className='mb-1'>
-                            <button
-                                onClick={() => { setSelectedGroupId(group.id); onGroupSelect(group.id); }}
-                                className={`w-full rounded-full py-2 pl-2 flex items-center gap-3 transition-colors duration-200
-                                ${selectedGroupId === group.id ? 'bg-neutral text-neutral-content' : 'hover:bg-neutral/10'}`}
+                        <li key={group.id}>
+                            <div
+                                className={`group/item w-full rounded-full py-1.5 pl-2 pr-1 flex items-center gap-2 transition-all duration-200
+                                    ${selectedGroupId === group.id
+                                        ? 'bg-neutral'
+                                        : 'hover:bg-base-200'
+                                    }`}
                             >
-                                <div className={`w-8 h-8 ${selectedGroupId === group.id ? 'bg-neutral-400' : 'bg-neutral'} 
-                                        rounded-full flex items-center 
-                                        justify-center text-neutral-content font-medium text-sm`}>
-                                    {parseInitials(group.name)}
+                                <button
+                                    onClick={() => { setSelectedGroupId(group.id); onGroupSelect(group.id); }}
+                                    className="flex-1 flex items-center gap-2 min-w-0"
+                                >
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                        ${selectedGroupId === group.id
+                                            ? 'bg-neutral-400/30 text-neutral-content'
+                                            : 'bg-neutral/10 text-neutral-content/70'
+                                        }`}
+                                    >
+                                        <span className="text-sm font-medium">
+                                            {parseInitials(group.name)}
+                                        </span>
+                                    </div>
+                                    <span className={`text-sm font-medium truncate
+                                        ${selectedGroupId === group.id
+                                            ? 'text-neutral-content'
+                                            : 'text-base-content/70'
+                                        }`}
+                                    >
+                                        {group.name}
+                                    </span>
+                                </button>
+                                <div className="flex items-center">
+                                    <i className="bi bi-pencil text-base text-base-content/50 hover:text-blue-500 cursor-pointer px-1 transition-colors duration-200" />
+                                    <i className="bi bi-trash text-base text-base-content/50 hover:text-rose-600 cursor-pointer px-1 transition-colors duration-200" />
                                 </div>
-                                <span className='text-sm font-medium truncate'>
-                                    {group.name}
-                                </span>
-                            </button>
+                            </div>
                         </li>
                     ))}
                 </ul>
             </div>
+
+            {/* Create Group Modal */}
+            <dialog id="create_group_form" className="modal">
+                <div className="modal-box max-w-sm md:max-w-md">
+                    <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    </form>
+                    <h3 className="font-bold text-lg mb-6 text-center">Create a new group</h3>
+                    <div className="space-y-4 mb-8">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-base-content/70 px-2">Name</label>
+                            <input
+                                type="text"
+                                placeholder="Enter your group name"
+                                className="input input-bordered w-full rounded-full bg-base-200 border-base-300 
+                                    focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20"
+                                onChange={handleNameChange}
+                                value={name}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-base-content/70 px-2">Description</label>
+                            <textarea
+                                placeholder="Optional: Brief description of the group"
+                                className="textarea textarea-bordered w-full rounded-3xl bg-base-200 border-base-300 
+                                        focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20 min-h-[120px] px-4"
+                                onChange={handleDescriptionChange}
+                                value={description}
+                            />
+                            <p className="text-xs text-base-content/50 px-2">
+                                Keep it short - less than 80 characters
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                        <form method="dialog">
+                            <button className="px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                                     transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60">
+                                Cancel
+                            </button>
+                        </form>
+                        <form method="dialog">
+                            <button
+                                className="px-4 py-2 bg-secondary text-sm font-medium text-secondary-content rounded-full
+                                        transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:opacity-50"
+                                onClick={() => {
+                                    onAddGroup(name, description);
+                                    clearForm();
+                                    const dialog = document.getElementById('create_group_form');
+                                    if (dialog instanceof HTMLDialogElement) {
+                                        dialog.close();
+                                    }
+                                }}
+                                disabled={!name.trim()}
+                            >
+                                Create Group
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>Close</button>
+                </form>
+            </dialog>
         </div>
     );
 };
