@@ -90,23 +90,23 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
     }, []);
 
     return (
-        <div ref={sidebarRef} className="h-full flex flex-col p-2 pt-4">
+        <div ref={sidebarRef} className='h-full flex flex-col p-2 pt-4'>
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 px-2">
-                <h2 className="text-lg font-semibold text-base-content/80 truncate">All Groups</h2>
+            <div className='flex items-center justify-between mb-6 px-2'>
+                <h2 className='text-lg font-semibold text-base-content/80 truncate'>All Groups</h2>
                 <button
                     onClick={handleAddGroupButton}
-                    className="h-9 px-3 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm 
-                            font-medium transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 flex-shrink-0"
+                    className='h-9 px-3 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm 
+                            font-medium transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 flex-shrink-0'
                 >
-                    <i className="bi bi-plus-lg text-base" />
+                    <i className='bi bi-plus-lg text-base' />
                     {showAddLabel && <span>Add</span>}
                 </button>
             </div>
 
             {/* Groups List */}
-            <div className="overflow-y-auto flex-1 -mx-2 px-2">
-                <ul className="space-y-1.5">
+            <div className='overflow-y-auto flex-1 -mx-2 px-2 auto-hide-scrollbar'>
+                <ul className='space-y-1.5'>
                     {groups.map((group) => (
                         <li key={group.id}>
                             <div
@@ -118,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                             >
                                 <button
                                     onClick={() => { setSelectedGroupId(group.id); onGroupSelect(group.id); }}
-                                    className="flex-1 flex items-center gap-2 min-w-0"
+                                    className='flex-1 flex items-center gap-2 min-w-0'
                                 >
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
                                         ${selectedGroupId === group.id
@@ -126,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                             : 'bg-neutral/10 text-neutral-content/70'
                                         }`}
                                     >
-                                        <span className="text-sm font-medium">
+                                        <span className='text-sm font-medium'>
                                             {parseInitials(group.name)}
                                         </span>
                                     </div>
@@ -139,9 +139,19 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                         {group.name}
                                     </span>
                                 </button>
-                                <div className="flex items-center">
-                                    <i className="bi bi-pencil text-base text-base-content/50 hover:text-blue-500 cursor-pointer px-1 transition-colors duration-200" />
-                                    <i className="bi bi-trash text-base text-base-content/50 hover:text-rose-600 cursor-pointer px-1 transition-colors duration-200" />
+                                <div className='flex items-center'>
+                                <button 
+                                    className='px-1 rounded-lg hover:bg-base-200' 
+                                    onClick={() => console.log(`Edit button clicked for group: ${group.name}`)}
+                                >
+                                    <i className='bi bi-pencil text-base text-base-content/50 hover:text-blue-200 active:text-blue-300 transition-colors duration-200' />
+                                </button>
+                                <button 
+                                    className='px-1 rounded-lg hover:bg-base-200' 
+                                    onClick={() => console.log(`Delete button clicked for group: ${group.name}`)}
+                                >
+                                    <i className='bi bi-trash text-base text-base-content/50 hover:text-red-300 active:text-red-500 transition-colors duration-200' />
+                                </button>
                                 </div>
                             </div>
                         </li>
@@ -150,49 +160,49 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
             </div>
 
             {/* Create Group Modal */}
-            <dialog id="create_group_form" className="modal">
-                <div className="modal-box max-w-sm md:max-w-md">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <dialog id='create_group_form' className='modal'>
+                <div className='modal-box max-w-sm md:max-w-md'>
+                    <form method='dialog'>
+                        <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
                     </form>
-                    <h3 className="font-bold text-lg mb-6 text-center">Create a new group</h3>
-                    <div className="space-y-4 mb-8">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-base-content/70 px-2">Name</label>
+                    <h3 className='font-bold text-lg mb-6 text-center'>Create a new group</h3>
+                    <div className='space-y-4 mb-8'>
+                        <div className='space-y-2'>
+                            <label className='text-sm font-medium text-base-content/70 px-2'>Name</label>
                             <input
-                                type="text"
-                                placeholder="Enter your group name"
-                                className="input input-bordered w-full rounded-full bg-base-200 border-base-300 
-                                    focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20"
+                                type='text'
+                                placeholder='Enter your group name'
+                                className='input input-bordered w-full rounded-full bg-base-200 border-base-300 
+                                    focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20'
                                 onChange={handleNameChange}
                                 value={name}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-base-content/70 px-2">Description</label>
+                        <div className='space-y-2'>
+                            <label className='text-sm font-medium text-base-content/70 px-2'>Description</label>
                             <textarea
-                                placeholder="Optional: Brief description of the group"
-                                className="textarea textarea-bordered w-full rounded-3xl bg-base-200 border-base-300 
-                                        focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20 min-h-[120px] px-4"
+                                placeholder='Optional: Brief description of the group'
+                                className='textarea textarea-bordered w-full rounded-3xl bg-base-200 border-base-300 
+                                        focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20 min-h-[120px] px-4'
                                 onChange={handleDescriptionChange}
                                 value={description}
                             />
-                            <p className="text-xs text-base-content/50 px-2">
+                            <p className='text-xs text-base-content/50 px-2'>
                                 Keep it short - less than 80 characters
                             </p>
                         </div>
                     </div>
-                    <div className="flex justify-between gap-4">
-                        <form method="dialog">
-                            <button className="px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
-                                     transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60">
+                    <div className='flex justify-between gap-4'>
+                        <form method='dialog'>
+                            <button className='px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                                     transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60'>
                                 Cancel
                             </button>
                         </form>
-                        <form method="dialog">
+                        <form method='dialog'>
                             <button
-                                className="px-4 py-2 bg-secondary text-sm font-medium text-secondary-content rounded-full
-                                        transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:opacity-50"
+                                className='px-4 py-2 bg-secondary text-sm font-medium text-secondary-content rounded-full
+                                        transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:opacity-50'
                                 onClick={() => {
                                     onAddGroup(name, description);
                                     clearForm();
@@ -208,7 +218,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                         </form>
                     </div>
                 </div>
-                <form method="dialog" className="modal-backdrop">
+                <form method='dialog' className='modal-backdrop'>
                     <button>Close</button>
                 </form>
             </dialog>
