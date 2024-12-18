@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
     useEffect(() => {
         const FIRST = 0;
         if (groups.length > 0) {
-            setSelectedGroupId(groups[FIRST].id);
+            setSelectedGroupId(groups[FIRST].id || '');
         }
     }, [])
 
@@ -68,8 +68,8 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
     useEffect(() => {
         if (groups.length > 0) {
             const lastGroup = groups[groups.length - 1];
-            setSelectedGroupId(lastGroup.id);
-            onGroupSelect(lastGroup.id);
+            setSelectedGroupId(lastGroup.id || '');
+            onGroupSelect(lastGroup.id || '');
         }
     }, [groups]);
 
@@ -117,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                     }`}
                             >
                                 <button
-                                    onClick={() => { setSelectedGroupId(group.id); onGroupSelect(group.id); }}
+                                    onClick={() => { setSelectedGroupId(group.id || ''); onGroupSelect(group.id || ''); }}
                                     className='flex-1 flex items-center gap-2 min-w-0'
                                 >
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                         }`}
                                     >
                                         <span className='text-sm font-medium'>
-                                            {parseInitials(group.name)}
+                                            {parseInitials(group.name || '')}
                                         </span>
                                     </div>
                                     <span className={`text-sm font-medium truncate
