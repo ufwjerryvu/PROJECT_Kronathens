@@ -3,10 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 interface HeaderProps {
     name: string,
     viewType: string,
+    onSortSelection(sortOption: string): void,
     onViewSwitch(): void
 };
 
-const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
+const Header: React.FC<HeaderProps> = ({ 
+    name, viewType, onViewSwitch, onSortSelection
+}) => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
@@ -72,47 +75,88 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
         { id: 'priority', label: 'Priority', icon: 'bi-sort-numeric-down' }
     ];
 
+    /* Gives you a modal to create your checklist */
+    const handleAddChecklistButton = () => {
+        const modal = document.getElementById('create_checklist_form') as HTMLDialogElement | null;
+
+        if (modal) {
+            modal.showModal();
+        }
+    };
+
+    /* See when to turn the buttons into icon-only buttons */
+    const [showButtonLabels, setShowButtonLabels] = React.useState(true);
+    const headerRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+        const checkSpace = () => {
+            if (headerRef.current) {
+                const headerWidth = headerRef.current.offsetWidth;
+
+                const MIN_WIDTH_TO_SHOW_LABEL = 500;
+                setShowButtonLabels(headerWidth > MIN_WIDTH_TO_SHOW_LABEL);
+            }
+        };
+
+        checkSpace();
+        window.addEventListener('resize', checkSpace);
+        return () => window.removeEventListener('resize', checkSpace);
+    }, []);
+
+    /* Close the dropdowns once we press outside of the dropdown */
+    React.useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterRef.current && !filterRef.current.contains(event.target)) {
+                setIsFilterOpen(false);
+            }
+            if (sortRef.current && !sortRef.current.contains(event.target)) {
+                setIsSortOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+
     return (
-        <div className='bg-base-100 rounded-xl shadow-sm px-3 sm:px-4 py-3 w-full'>
-            <div className='flex flex-wrap gap-y-3 w-full'>
-                <div className='flex items-center gap-3 flex-grow mr-auto w-full sm:w-auto'>
-                    <div className='w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-inner flex-shrink-0'>
-                        <span className='text-secondary-content text-sm font-semibold'>
+        <div ref={headerRef} className="bg-base-100 rounded-xl shadow-sm px-3 sm:px-4 py-3 w-full">
+            <div className="flex flex-wrap gap-y-3 w-full">
+                <div className="flex items-center gap-3 flex-grow mr-auto w-full sm:w-auto">
+                    <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-inner flex-shrink-0">
+                        <span className="text-secondary-content text-sm font-semibold">
                             {parseInitials(name)}
                         </span>
                     </div>
-                    <h1 className='text-lg text-base-content font-semibold tracking-tight truncate'>
+                    <h1 className="text-lg text-base-content font-semibold tracking-tight truncate">
                         {name}
                     </h1>
                 </div>
 
-                <div className='flex flex-wrap items-center gap-3 w-full sm:w-auto'>
-                    <div className='relative flex-1 min-w-[200px] sm:flex-none sm:w-48'>
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div className="relative flex-1 min-w-[200px] sm:flex-none sm:w-48">
                         <input
-                            type='text'
-                            placeholder='Search...'
-                            className='w-full h-9 bg-base-200 border-none rounded-full px-4 py-2 pl-10 text-sm text-base-content focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-all duration-200'
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full h-9 bg-base-200 border-none rounded-full px-4 py-2 pl-10 text-sm text-base-content focus:outline-none focus:ring-2 focus:ring-secondary/20 transition-all duration-200"
                         />
-                        <i className='bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-base opacity-60'></i>
+                        <i className="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-base opacity-60" />
                     </div>
 
-                    <div className='flex items-center gap-2 flex-shrink-0 ml-auto sm:ml-0'>
-                        { /* Filtering */}
-                        <div className='relative' ref={filterRef}>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-auto sm:ml-0">
+                        <div className="relative" ref={filterRef}>
                             <button
-                                className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
+                                className="h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200"
                                 onClick={() => {
                                     setIsFilterOpen(!isFilterOpen);
                                     setIsSortOpen(false);
                                 }}
                             >
-                                <i className='bi bi-funnel text-base'></i>
-                                <span className='hidden sm:inline'>Filter</span>
-                                <i className={`bi bi-chevron-${isFilterOpen ? 'up' : 'down'} text-xs`}></i>
+                                <i className="bi bi-funnel text-base" />
+                                {showButtonLabels && <span>Filter</span>}
+                                <i className={`bi bi-chevron-${isFilterOpen ? 'up' : 'down'} text-xs`} />
                             </button>
-
                             {isFilterOpen && (
-                                <div className='absolute top-full right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-lg py-2 z-10'>
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-lg py-2 z-10">
                                     {filterOptions.map((option) => (
                                         <button
                                             key={option.id}
@@ -123,33 +167,29 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                                 setIsFilterOpen(false);
                                             }}
                                         >
-                                            <i className={`bi ${option.icon}`}></i>
+                                            <i className={`bi ${option.icon}`} />
                                             {option.label}
-                                            {activeFilter === option.id && (
-                                                <i className='bi bi-check ml-auto'></i>
-                                            )}
+                                            {activeFilter === option.id && <i className="bi bi-check ml-auto" />}
                                         </button>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        { /* Sorting */}
-                        <div className='relative' ref={sortRef}>
+                        <div className="relative" ref={sortRef}>
                             <button
-                                className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
+                                className="h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200"
                                 onClick={() => {
                                     setIsSortOpen(!isSortOpen);
                                     setIsFilterOpen(false);
                                 }}
                             >
-                                <i className='bi bi-sort-down text-base'></i>
-                                <span className='hidden sm:inline'>Sort</span>
-                                <i className={`bi bi-chevron-${isSortOpen ? 'up' : 'down'} text-xs`}></i>
+                                <i className="bi bi-sort-down text-base" />
+                                {showButtonLabels && <span>Sort</span>}
+                                <i className={`bi bi-chevron-${isSortOpen ? 'up' : 'down'} text-xs`} />
                             </button>
-
                             {isSortOpen && (
-                                <div className='absolute top-full right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-lg py-2 z-10'>
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-lg py-2 z-10">
                                     {sortOptions.map((option) => (
                                         <button
                                             key={option.id}
@@ -158,35 +198,32 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                             onClick={() => {
                                                 setActiveSort(option.id);
                                                 setIsSortOpen(false);
+                                                onSortSelection(option.id)
                                             }}
                                         >
-                                            <i className={`bi ${option.icon}`}></i>
+                                            <i className={`bi ${option.icon}`} />
                                             {option.label}
-                                            {activeSort === option.id && (
-                                                <i className='bi bi-check ml-auto'></i>
-                                            )}
+                                            {activeSort === option.id && <i className="bi bi-check ml-auto" />}
                                         </button>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        {/* View switch */}
                         <button
-                            className='h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm 
-                                text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200'
+                            className="h-9 px-2.5 bg-base-200 rounded-full flex items-center gap-1.5 text-sm text-secondary hover:bg-base-300 active:bg-base-300/50 transition-all duration-200"
                             onClick={onViewSwitch}
                         >
                             {renderViewIcon(viewType)}
-                            <span className='hidden sm:inline'>View</span>
+                            {showButtonLabels && <span>View</span>}
                         </button>
 
-                        {/* Add checklist button */}
-                        <button className='h-9 px-2.5 bg-secondary text-secondary-content rounded-full flex 
-                                items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200
-                                hover:bg-opacity-80 active:bg-opacity-60'>
-                            <i className='bi bi-plus-lg text-base'></i>
-                            <span className='hidden sm:inline'>Checklist</span>
+                        <button
+                            className="h-9 px-2.5 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60"
+                            onClick={handleAddChecklistButton}
+                        >
+                            <i className="bi bi-plus-lg text-base" />
+                            {showButtonLabels && <span>Checklist</span>}
                         </button>
                     </div>
                 </div>

@@ -1,6 +1,15 @@
 import React from 'react';
 
 const EmptyState = () => {
+    /* Gives you a modal to create your group */
+    const handleAddGroupButton = () => {
+        const modal = document.getElementById('create_group_form') as HTMLDialogElement | null;
+
+        if (modal) {
+            modal.showModal();
+        }
+    };
+
     return (
         <div className='flex flex-col items-center justify-center'>
             <div className='bg-base-300 rounded-full p-6 mb-4'>
@@ -30,9 +39,11 @@ const EmptyState = () => {
                 className='px-6 py-2 bg-secondary text-secondary-content rounded-full 
                     flex items-center gap-1.5 text-sm font-medium whitespace-nowrap
                     transition-all duration-200 hover:opacity-80 active:opacity-60'
+                onClick={handleAddGroupButton}
             >
                 <i className='bi bi-plus-lg text-base'></i> Create Group
             </button>
+            
         </div>
     );
 };
