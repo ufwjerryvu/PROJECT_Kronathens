@@ -3,10 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 interface HeaderProps {
     name: string,
     viewType: string,
+    onSortSelection(sortOption: string): void,
     onViewSwitch(): void
 };
 
-const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
+const Header: React.FC<HeaderProps> = ({ 
+    name, viewType, onViewSwitch, onSortSelection
+}) => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
@@ -195,6 +198,7 @@ const Header: React.FC<HeaderProps> = ({ name, viewType, onViewSwitch }) => {
                                             onClick={() => {
                                                 setActiveSort(option.id);
                                                 setIsSortOpen(false);
+                                                onSortSelection(option.id)
                                             }}
                                         >
                                             <i className={`bi ${option.icon}`} />
