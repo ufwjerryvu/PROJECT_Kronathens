@@ -4,6 +4,7 @@ import Card from './CardItem.tsx';
 import ListItem from './ListItem.tsx';
 import Sidebar from './Sidebar.tsx';
 import EmptyState from './EmptyState.tsx';
+import sortCards from './Sorter.tsx';
 
 import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
@@ -53,6 +54,26 @@ const Box: React.FC = () => {
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
     }
+
+    /* Gets the sorted option from the title bar */
+    const handleSort = (option: string) => {
+        if(!currentGroup){
+            return;
+        }
+
+        setCurrentGroup(current => ({
+            ...current,
+            cards: sortCards(current?.cards || [], option)
+        }));
+
+        setGroups(currentGroups => 
+            currentGroups.map(group => 
+                    group.id === currentGroup.id ? {...group, cards: sortCards(
+                        group.cards || [], option
+                    )} : group
+            )
+        );
+    };
 
     /* Add a new group to the existing list */
     const handleConfirmGroupCreation = (name: string, description: string) => {
@@ -150,6 +171,7 @@ const Box: React.FC = () => {
         const updatedGroups = groups.map(group =>
             group.id === currentGroup?.id ? updatedCurrentGroup : group
         )
+        setGroups(updatedGroups);
     }
 
     return (
@@ -194,7 +216,8 @@ const Box: React.FC = () => {
                     {groups.length > 0 ? (
                         <div>
                             <div className='w-full bg-base-200 pb-3'>
-                                <Header name={currentGroup?.name || ''} viewType={viewType} onViewSwitch={handleViewSwitch} />
+                                <Header name={currentGroup?.name || ''} viewType={viewType} onViewSwitch={handleViewSwitch} 
+                                    onSortSelection={handleSort}/>
                             </div>
                             <div className='flex-1 overflow-auto auto-hide-scrollbar'>
                                 {renderChecklists()}

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
 
 import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
-// import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
+import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
 
 interface SidebarProps {
     groups: GroupInformation[],
