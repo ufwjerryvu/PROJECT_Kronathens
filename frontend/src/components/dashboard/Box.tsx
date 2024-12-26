@@ -6,6 +6,8 @@ import Sidebar from './Sidebar.tsx';
 import EmptyState from './EmptyState.tsx';
 import sortCards from './Sorter.tsx';
 
+import Workspace from '../workspace/Workspace.tsx';
+
 import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
 
@@ -22,6 +24,19 @@ const Box: React.FC = () => {
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
+    const [selectedCard, setSelectedCard] = useState<CardInformation | null>(null);
+    const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+
+    const handleCardClick = (id: string) => {
+        if (currentGroup?.cards) {
+            const card = currentGroup.cards[parseInt(id)];
+            if (card) {
+                setSelectedCard(card);
+                setIsWorkspaceOpen(true);
+            }
+        }
+    };
+
     /* On mount, pick the first group */
     useEffect(() => {
         const FIRST = 0;
@@ -32,7 +47,18 @@ const Box: React.FC = () => {
 
     /* Edit the card */
     const handleChecklistItemEdit = (id: string) => {
-        console.log('Edit card:', id);
+        if (currentGroup?.cards) {
+            const card = currentGroup.cards[parseInt(id)];
+            if (card) {
+                setSelectedCard(card);
+                setIsWorkspaceOpen(true);
+            }
+        }
+    };
+
+    const handleWorkspaceClose = () => {
+        setIsWorkspaceOpen(false);
+        setTimeout(() => setSelectedCard(null), 300); // Clear after animation
     };
 
     /* Delete the card */
@@ -57,7 +83,7 @@ const Box: React.FC = () => {
 
     /* Gets the sorted option from the title bar */
     const handleSort = (option: string) => {
-        if(!currentGroup){
+        if (!currentGroup) {
             return;
         }
 
@@ -66,11 +92,13 @@ const Box: React.FC = () => {
             cards: sortCards(current?.cards || [], option)
         }));
 
-        setGroups(currentGroups => 
-            currentGroups.map(group => 
-                    group.id === currentGroup.id ? {...group, cards: sortCards(
+        setGroups(currentGroups =>
+            currentGroups.map(group =>
+                group.id === currentGroup.id ? {
+                    ...group, cards: sortCards(
                         group.cards || [], option
-                    )} : group
+                    )
+                } : group
             )
         );
     };
@@ -107,6 +135,7 @@ const Box: React.FC = () => {
                             completionPercentage={item.completionPercentage}
                             dateCreated={item.dateCreated}
                             dateModified={item.dateModified}
+                            onCardClick={handleCardClick}
                             onEdit={handleChecklistItemEdit}
                             onDelete={handleDelete}
                             onAddCollaborator={handleAddCollaborator}
@@ -127,6 +156,7 @@ const Box: React.FC = () => {
                         completionPercentage={card.completionPercentage}
                         dateCreated={card.dateCreated}
                         dateModified={card.dateModified}
+                        onCardClick={handleCardClick}
                         onEdit={handleChecklistItemEdit}
                         onDelete={handleDelete}
                         onAddCollaborator={handleAddCollaborator}
@@ -212,20 +242,31 @@ const Box: React.FC = () => {
                     <Sidebar groups={groups} onAddGroup={handleConfirmGroupCreation} onGroupSelect={handleGroupSelection} />
                 </div>
 
-                <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col'>
+                <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col relative'> {/* Added relative positioning */}
                     {groups.length > 0 ? (
-                        <div>
+                        <>
                             <div className='w-full bg-base-200 pb-3'>
-                                <Header name={currentGroup?.name || ''} viewType={viewType} onViewSwitch={handleViewSwitch} 
-                                    onSortSelection={handleSort}/>
+                                <Header
+                                    name={currentGroup?.name || ''}
+                                    viewType={viewType}
+                                    onViewSwitch={handleViewSwitch}
+                                    onSortSelection={handleSort}
+                                />
                             </div>
                             <div className='flex-1 overflow-auto auto-hide-scrollbar'>
                                 {renderChecklists()}
                             </div>
-                        </div>) : (
+                            <Workspace
+                                isOpen={isWorkspaceOpen}
+                                onClose={handleWorkspaceClose}
+                                card={selectedCard}
+                            />
+                        </>
+                    ) : (
                         <div className='flex flex-cols h-full items-center justify-center'>
                             <EmptyState />
-                        </div>)}
+                        </div>
+                    )}
                 </div>
 
                 {/* Create checklist modal */}

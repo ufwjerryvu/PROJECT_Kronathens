@@ -3,12 +3,12 @@ import React from 'react';
 interface ListItemProps {
     id: string;
     title: string;
-
     dateCreated: Date;
     dateModified: Date;
     completionPercentage: number;
     taskCount: number;
 
+    onCardClick: (id: string) => void;  // New handler for item click
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
     onAddCollaborator: (id: string) => void;
@@ -17,28 +17,35 @@ interface ListItemProps {
 const ListItem = ({
     id,
     title,
-
     dateCreated,
     dateModified,
     completionPercentage,
     taskCount,
-
+    onCardClick,
     onEdit,
     onDelete,
     onAddCollaborator
 }: ListItemProps) => {
+    /* Handle the main list item click */
+    const handleItemClick = () => {
+        onCardClick(id);
+    };
+
     /* Edits the information of the card */
     const handleEdit = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent item click
         onEdit(id);
     };
 
     /* Delete the checklist item/card and everything related to it */ 
     const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent item click
         onDelete(id);
     };
 
     /* Add a collaborator */ 
     const handleAddCollaborator = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent item click
         onAddCollaborator(id);
     };
 
@@ -57,8 +64,8 @@ const ListItem = ({
                 cursor-pointer select-none'
             role='button'
             tabIndex={0}
+            onClick={handleItemClick}
         >
-
             <div className='flex-1 min-w-0 mr-4'>
                 <h3 className='font-medium truncate'>{title}</h3>
                 <div className='hidden md:block text-sm text-base-content/70'>
