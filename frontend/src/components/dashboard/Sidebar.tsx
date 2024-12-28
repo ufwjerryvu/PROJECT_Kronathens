@@ -141,16 +141,16 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                 </button>
                                 <div className='flex items-center'>
                                 <button 
-                                    className='px-1 rounded-lg hover:bg-base-200' 
+                                    className='px-1 rounded-lg' 
                                     onClick={() => console.log(`Edit button clicked for group: ${group.name}`)}
                                 >
-                                    <i className='bi bi-pencil text-base text-base-content/50 hover:text-blue-200 active:text-blue-300 transition-colors duration-200' />
+                                    <i className='bi bi-pencil text-base text-base-content/50 hover:text-blue-300 active:text-blue-400 transition-colors duration-200' />
                                 </button>
                                 <button 
-                                    className='px-1 rounded-lg hover:bg-base-200' 
+                                    className='px-1 rounded-lg' 
                                     onClick={() => console.log(`Delete button clicked for group: ${group.name}`)}
                                 >
-                                    <i className='bi bi-trash text-base text-base-content/50 hover:text-red-300 active:text-red-500 transition-colors duration-200' />
+                                    <i className='bi bi-trash text-base text-base-content/50 hover:text-red-600 active:text-red-700 transition-colors duration-200' />
                                 </button>
                                 </div>
                             </div>

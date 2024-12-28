@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import ThemeToggler from './ThemeToggler.tsx';
 
 const Navigation: React.FC = () => {
-    const [isLoggedIn] = useState<boolean>(true);
+    const [isLoggedIn] = useState<boolean>(false);
+
+    const navigate = useNavigate();
+    const handleNavigateToLogin = () => {
+        navigate('/login');
+    }
 
     return (
         <>
@@ -18,9 +25,9 @@ const Navigation: React.FC = () => {
                                 <ul
                                     tabIndex={0}
                                     className='menu menu-sm dropdown-content mt-1 p-2 shadow bg-base-200 rounded-box z-[1] w-52 p-2 shadow'>
-                                    <li><a href='#!'>Dashboard</a></li>
-                                    <li><a href='.'>Home</a></li>
-                                    <li><a href='#!'>About</a></li>
+                                    <li><a href='/'>Dashboard</a></li>
+                                    <li><a href='/'>Home</a></li>
+                                    <li><a href='/!'>About</a></li>
                                 </ul>
                             </div>
                             <style>
@@ -33,9 +40,9 @@ const Navigation: React.FC = () => {
                         </div>
                         <div className='navbar-center hidden lg:flex'>
                             <ul className='menu menu-horizontal px-1 font-medium'>
-                                <li><a className='rounded-full hover:bg-rose-200 active:!bg-rose-700 focus:!bg-rose-200 focus:!text-white' href='.'>Home</a></li>
-                                <li><a className='rounded-full hover:bg-rose-200 active:!bg-rose-700 focus:!bg-rose-200 focus:!text-white' href='#!'>Dashboard</a></li>
-                                <li><a className='rounded-full hover:bg-rose-200 active:!bg-rose-700 focus:!bg-rose-200 focus:!text-white' href='#!'>About</a></li>
+                                <li><a className='rounded-full hover:bg-grey-200 active:!bg-grey-700 focus:!bg-grey-200 focus:!text-white' href='/'>Home</a></li>
+                                <li><a className='rounded-full hover:bg-grey-200 active:!bg-grey-700 focus:!bg-grey-200 focus:!text-white' href='/'>Dashboard</a></li>
+                                <li><a className='rounded-full hover:bg-grey-200 active:!bg-grey-700 focus:!bg-grey-200 focus:!text-white' href='/'>About</a></li>
                             </ul>
                         </div>
                         <div className='navbar-end'>
@@ -45,8 +52,9 @@ const Navigation: React.FC = () => {
                                     !isLoggedIn ? (
                                         <button className='btn h-10 min-h-[2.5rem] normal-case rounded-full px-6
                                         bg-primary hover:bg-primary/80 
-                                        text-primary-content border-none'>
-                                            Sign in
+                                        text-primary-content border-none'
+                                            onClick={handleNavigateToLogin}>
+                                            Login
                                         </button>
                                     ) : (
                                         <div className='flex items-center gap-4'>

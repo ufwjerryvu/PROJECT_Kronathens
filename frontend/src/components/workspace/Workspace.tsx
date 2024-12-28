@@ -1,32 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
+
+import { Group } from '../../interfaces/workspace/Group.tsx';
+import { Task } from '../../interfaces/workspace/Task.tsx';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 
-interface Task {
-    id: string;
-    text: string;
-    completed: boolean;
-    weight: number;
-}
-
-interface Group {
-    id: string;
-    name: string;
-    tasks: Task[];
-}
-
+/* Props interface defining the workspace component's configuration options */
 interface WorkspaceProps {
     isOpen: boolean;
     onClose: () => void;
     card: CardInformation | null;
 }
 
+/* Main workspace component for managing task groups and individual tasks with progress tracking */
 const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
+    /* Stores all task groups and their tasks */
     const [groups, setGroups] = useState<Group[]>([]);
+
+    /* Tracks currently edited item's ID */
     const [editingId, setEditingId] = useState<string | null>(null);
+
+    /* Temporary storage for item being edited */
     const [newName, setNewName] = useState('');
+
+    /* Reference for auto-focusing input fields */
     const inputRef = useRef<HTMLInputElement>(null);
 
+    /* Toggles completion status of a specific task within a group */
     const toggleTask = (groupId: string, taskId: string) => {
         setGroups(groups.map(group =>
             group.id === groupId
@@ -42,6 +42,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         ));
     };
 
+    /* Creates a new empty task group and enters edit mode */
     const addGroup = () => {
         const id = Date.now().toString();
         const newGroup: Group = {
@@ -54,6 +55,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         setNewName('');
     };
 
+    /* Adds a new task to specified group and enters edit mode */
     const addTask = (groupId: string) => {
         const id = Date.now().toString();
         setGroups(groups.map(group =>
@@ -73,10 +75,12 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         setNewName('');
     };
 
+    /* Removes specified group and all its tasks */
     const removeGroup = (groupId: string) => {
         setGroups(groups.filter(group => group.id !== groupId));
     };
 
+    /* Removes a specific task from its parent group */
     const removeTask = (groupId: string, taskId: string) => {
         setGroups(groups.map(group =>
             group.id === groupId
@@ -88,15 +92,18 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         ));
     };
 
+    /* Initiates edit mode for a group or task */
     const startEdit = (id: string, currentName: string) => {
         setEditingId(id);
         setNewName(currentName);
     };
 
+    /* Updates the newName state as user types in edit field */
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewName(e.target.value);
     };
 
+    /* Saves current edit and creates new item - used for quick sequential additions */
     const saveCurrentAndAddNew = (editId: string, text: string) => {
         setGroups(prevGroups => {
             const updatedGroups = prevGroups.map(group => {
@@ -113,6 +120,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                 };
             });
 
+            /* Check if editing task within group or group itself */
             const group = updatedGroups.find(g => g.tasks.some(t => t.id === editId));
 
             if (group) {
@@ -138,6 +146,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         }, 0);
     };
 
+    /* Handles keyboard events for saving and creating new items */
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Tab' && editingId) {
             e.preventDefault();
@@ -183,6 +192,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         }
     };
 
+    /* Saves current edit when input loses focus */
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         if (!editingId) return;
 
@@ -205,13 +215,14 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         setNewName('');
     };
 
+    /* Auto-focus input field when entering edit mode */
     useEffect(() => {
         if (editingId && inputRef.current) {
             inputRef.current.focus();
         }
     }, [editingId]);
 
-    /* Calculate weighted completion statistics */
+    /* Calculate completion statistics based on task weights */
     const totalWeight = groups.reduce((acc, group) =>
         acc + group.tasks.reduce((sum, task) => sum + task.weight, 0), 0);
     const completedWeight = groups.reduce((acc, group) =>
@@ -224,18 +235,20 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                 }`}
         >
             <div className="h-full flex flex-col">
+                {/* Header section with back button and title */}
                 <div className="p-4 border-b border-base-300">
                     <button
                         onClick={onClose}
                         className="btn btn-ghost btn-sm gap-2 text-sm"
                     >
                         <ArrowLeft size={18} />
-                        <span className="text-xl font-medium">{card?.title}</span>
+                        <span className="text-xl font-medium hidden sm:inline">{card?.title}</span>
                     </button>
                 </div>
 
                 <div className="flex-1 p-6 overflow-y-auto">
                     <div className="space-y-6">
+                        {/* Progress bar section */}
                         <div className="pb-6 border-b-2 border-base-300 mb-6">
                             <div className="text-xs text-base-content/70">
                                 Progress: {completedWeight}/{totalWeight} completed
@@ -249,9 +262,11 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                             <div className="text-xs mt-1">{completionPercentage}% Complete</div>
                         </div>
 
+                        {/* Task groups section */}
                         <div className="space-y-4">
                             {groups.map(group => (
                                 <div key={group.id} className="space-y-2">
+                                    {/* Group header with edit/remove controls */}
                                     <div className="flex items-center justify-between pl-2 mb-2">
                                         {editingId === group.id ? (
                                             <input
@@ -266,7 +281,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                             />
                                         ) : (
                                             <div
-                                                className="text-lg font-medium cursor-pointer"
+                                                className="text-lg font-medium cursor-pointer break-words"
                                                 onClick={() => startEdit(group.id, group.name)}
                                             >
                                                 {group.name}
@@ -280,12 +295,13 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                         </button>
                                     </div>
 
+                                    {/* Tasks list with completion toggles and weight controls */}
                                     {group.tasks.map(task => (
                                         <div
                                             key={task.id}
                                             className="group"
                                         >
-                                            <div className="flex items-center gap-2 py-1.5 pl-2">
+                                            <div className="flex flex-wrap items-center gap-2 py-0 pl-5">
                                                 <div
                                                     className={`w-5 h-5 rounded-full cursor-pointer ${task.completed
                                                             ? 'bg-green-500'
@@ -308,11 +324,11 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                         onChange={handleNameChange}
                                                         onBlur={handleBlur}
                                                         onKeyDown={handleKeyDown}
-                                                        className="flex-1 text-sm bg-transparent border-none focus:outline-none focus:ring-0 w-full"
+                                                        className="flex-1 min-w-0 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
                                                     />
                                                 ) : (
                                                     <span
-                                                        className={`flex-1 text-sm cursor-pointer ${task.completed
+                                                        className={`flex-1 min-w-0 text-sm cursor-pointer break-all ${task.completed
                                                                 ? 'line-through text-base-content/50'
                                                                 : ''
                                                             } transition-all duration-200`}
@@ -337,7 +353,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                         ))}
                                                         className="p-1 hover:bg-base-300/20 rounded"
                                                     >
-                                                        ▼
+                                                        -
                                                     </button>
                                                     <span className="text-xs w-6 text-center">{task.weight}</span>
                                                     <button
@@ -355,7 +371,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                         ))}
                                                         className="p-1 hover:bg-base-300/20 rounded"
                                                     >
-                                                        ▲
+                                                        +
                                                     </button>
                                                     <button
                                                         onClick={() => removeTask(group.id, task.id)}
@@ -368,9 +384,10 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                         </div>
                                     ))}
 
+                                    {/* Add new task button */}
                                     <button
                                         onClick={() => addTask(group.id)}
-                                        className="w-full text-left py-1.5 pl-9 text-xs text-base-content/50 hover:bg-base-300/20 rounded-lg"
+                                        className="w-full text-left py-1.5 pl-16 text-xs text-base-content/50 hover:bg-base-300/20 rounded-lg"
                                     >
                                         + Add item
                                     </button>
@@ -378,6 +395,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                             ))}
                         </div>
 
+                        {/* Add new group button */}
                         <button
                             onClick={addGroup}
                             className="w-full text-left py-1.5 pl-2 text-xs text-base-content/50 hover:bg-base-300/20 rounded-lg"
