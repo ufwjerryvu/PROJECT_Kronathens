@@ -8,8 +8,10 @@ import EmptyState from './EmptyState.tsx';
 import sortCards from './Sorter.tsx';
 import Workspace from '../workspace/Workspace.tsx';
 
-import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
-import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
+import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.tsx';
+import { CardInformation } from '../../interfaces/dashboard/CardInformation.tsx';
+import { Task } from '../../interfaces/workspace/Task.tsx';
+
 
 const Box: React.FC = () => {
     type ViewType = 'card' | 'list';
@@ -178,6 +180,7 @@ const Box: React.FC = () => {
         setDescription('');
     };
 
+    /* Adds a checklist, or a workspace, if you prefer to call it that instead */
     const handleAddChecklist = (title: string, description: string) => {
         /* If the title is empty then we give a nice looking format of the
             date today as the title */
@@ -197,7 +200,8 @@ const Box: React.FC = () => {
             dateCreated: new Date(),
             dateModified: new Date(),
             taskCount: 0,
-            completionPercentage: 0
+            completionPercentage: 0,
+            tasks: []
         }
 
         const updatedCurrentGroup: GroupInformation = {

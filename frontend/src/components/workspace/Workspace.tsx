@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 
-import { Group } from '../../interfaces/workspace/Group.tsx';
 import { Task } from '../../interfaces/workspace/Task.tsx';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 
@@ -12,10 +11,10 @@ interface WorkspaceProps {
     card: CardInformation | null;
 }
 
-/* Main workspace component for managing task groups and individual tasks with progress tracking */
+/* Main workspace component for managing task tasks and individual tasks with progress tracking */
 const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
-    /* Stores all task groups and their tasks */
-    const [groups, setGroups] = useState<Group[]>([]);
+    /* Stores all task tasks and their subtasks */
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     /* Tracks currently edited item's ID */
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -26,73 +25,73 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
     /* Reference for auto-focusing input fields */
     const inputRef = useRef<HTMLInputElement>(null);
 
-    /* Toggles completion status of a specific task within a group */
-    const toggleTask = (groupId: string, taskId: string) => {
-        setGroups(groups.map(group =>
-            group.id === groupId
+    /* Toggles completion status of a specific task within a Task */
+    const toggleTask = (TaskId: string, taskId: string) => {
+        setTasks(tasks.map(Task =>
+            Task.id === TaskId
                 ? {
-                    ...group,
-                    tasks: group.tasks.map(task =>
+                    ...Task,
+                    tasks: Task.tasks.map(task =>
                         task.id === taskId
                             ? { ...task, completed: !task.completed }
                             : task
                     )
                 }
-                : group
+                : Task
         ));
     };
 
-    /* Creates a new empty task group and enters edit mode */
-    const addGroup = () => {
+    /* Creates a new empty task Task and enters edit mode */
+    const addTask = () => {
         const id = Date.now().toString();
-        const newGroup: Group = {
+        const newTask: Task = {
             id,
             name: '',
             tasks: []
         };
-        setGroups([...groups, newGroup]);
+        setTasks([...tasks, newTask]);
         setEditingId(id);
         setNewName('');
     };
 
-    /* Adds a new task to specified group and enters edit mode */
-    const addTask = (groupId: string) => {
+    /* Adds a new task to specified Task and enters edit mode */
+    const addItem = (TaskId: string) => {
         const id = Date.now().toString();
-        setGroups(groups.map(group =>
-            group.id === groupId
+        setTasks(tasks.map(Task =>
+            Task.id === TaskId
                 ? {
-                    ...group,
-                    tasks: [...group.tasks, {
+                    ...Task,
+                    tasks: [...Task.tasks, {
                         id,
                         text: '',
                         completed: false,
                         weight: 1
                     }]
                 }
-                : group
+                : Task
         ));
         setEditingId(id);
         setNewName('');
     };
 
-    /* Removes specified group and all its tasks */
-    const removeGroup = (groupId: string) => {
-        setGroups(groups.filter(group => group.id !== groupId));
+    /* Removes specified Task and all its tasks */
+    const removeTask = (TaskId: string) => {
+        setTasks(tasks.filter(Task => Task.id !== TaskId));
     };
 
-    /* Removes a specific task from its parent group */
-    const removeTask = (groupId: string, taskId: string) => {
-        setGroups(groups.map(group =>
-            group.id === groupId
+    /* Removes a specific task from its parent Task */
+    const removeItem = (TaskId: string, taskId: string) => {
+        setTasks(tasks.map(Task =>
+            Task.id === TaskId
                 ? {
-                    ...group,
-                    tasks: group.tasks.filter(task => task.id !== taskId)
+                    ...Task,
+                    tasks: Task.tasks.filter(task => task.id !== taskId)
                 }
-                : group
+                : Task
         ));
     };
 
-    /* Initiates edit mode for a group or task */
+    /* Initiates edit mode for a Task or task */
     const startEdit = (id: string, currentName: string) => {
         setEditingId(id);
         setNewName(currentName);
@@ -105,14 +104,14 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
 
     /* Saves current edit and creates new item - used for quick sequential additions */
     const saveCurrentAndAddNew = (editId: string, text: string) => {
-        setGroups(prevGroups => {
-            const updatedGroups = prevGroups.map(group => {
-                if (group.id === editId) {
-                    return { ...group, name: text || 'New Task' };
+        setTasks(prevTasks => {
+            const updatedTasks = prevTasks.map(Task => {
+                if (Task.id === editId) {
+                    return { ...Task, name: text || 'New Task' };
                 }
                 return {
-                    ...group,
-                    tasks: group.tasks.map(task =>
+                    ...Task,
+                    tasks: Task.tasks.map(task =>
                         task.id === editId
                             ? { ...task, text: text || 'New Item' }
                             : task
@@ -120,13 +119,13 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                 };
             });
 
-            /* Check if editing task within group or group itself */
-            const group = updatedGroups.find(g => g.tasks.some(t => t.id === editId));
+            /* Check if editing task within Task or Task itself */
+            const Task = updatedTasks.find(g => g.tasks.some(t => t.id === editId));
 
-            if (group) {
+            if (Task) {
                 const newId = Date.now().toString();
-                return updatedGroups.map(g =>
-                    g.id === group.id
+                return updatedTasks.map(g =>
+                    g.id === Task.id
                         ? {
                             ...g,
                             tasks: [...g.tasks, { id: newId, text: '', completed: false, weight: 1 }]
@@ -136,7 +135,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
             }
 
             const newId = Date.now().toString();
-            return [...updatedGroups, { id: newId, name: '', tasks: [] }];
+            return [...updatedTasks, { id: newId, name: '', tasks: [] }];
         });
 
         setTimeout(() => {
@@ -156,14 +155,14 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
             const currentValue = newName.trim();
             const newId = Date.now().toString();
 
-            setGroups(prevGroups => {
-                const updatedGroups = prevGroups.map(group => {
-                    if (group.id === editingId) {
-                        return { ...group, name: currentValue || 'New Task' };
+            setTasks(prevTasks => {
+                const updatedTasks = prevTasks.map(Task => {
+                    if (Task.id === editingId) {
+                        return { ...Task, name: currentValue || 'New Task' };
                     }
                     return {
-                        ...group,
-                        tasks: group.tasks.map(task =>
+                        ...Task,
+                        tasks: Task.tasks.map(task =>
                             task.id === editingId
                                 ? { ...task, text: currentValue || 'New Item' }
                                 : task
@@ -171,11 +170,11 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                     };
                 });
 
-                const group = updatedGroups.find(g => g.tasks.some(t => t.id === editingId));
+                const Task = updatedTasks.find(g => g.tasks.some(t => t.id === editingId));
 
-                if (group) {
-                    return updatedGroups.map(g =>
-                        g.id === group.id
+                if (Task) {
+                    return updatedTasks.map(g =>
+                        g.id === Task.id
                             ? {
                                 ...g,
                                 tasks: [...g.tasks, { id: newId, text: '', completed: false, weight: 1 }]
@@ -184,7 +183,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                     );
                 }
 
-                return [...updatedGroups, { id: newId, name: '', tasks: [] }];
+                return [...updatedTasks, { id: newId, name: '', tasks: [] }];
             });
 
             setEditingId(newId);
@@ -197,13 +196,13 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
         if (!editingId) return;
 
         const value = newName.trim();
-        setGroups(groups.map(group => {
-            if (group.id === editingId) {
-                return { ...group, name: value || 'New Task' };
+        setTasks(tasks.map(Task => {
+            if (Task.id === editingId) {
+                return { ...Task, name: value || 'New Task' };
             }
             return {
-                ...group,
-                tasks: group.tasks.map(task =>
+                ...Task,
+                tasks: Task.tasks.map(task =>
                     task.id === editingId
                         ? { ...task, text: value || 'New Item' }
                         : task
@@ -223,10 +222,10 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
     }, [editingId]);
 
     /* Calculate completion statistics based on task weights */
-    const totalWeight = groups.reduce((acc, group) =>
-        acc + group.tasks.reduce((sum, task) => sum + task.weight, 0), 0);
-    const completedWeight = groups.reduce((acc, group) =>
-        acc + group.tasks.filter(t => t.completed).reduce((sum, task) => sum + task.weight, 0), 0);
+    const totalWeight = tasks.reduce((acc, Task) =>
+        acc + Task.tasks.reduce((sum, task) => sum + task.weight, 0), 0);
+    const completedWeight = tasks.reduce((acc, Task) =>
+        acc + Task.tasks.filter(t => t.completed).reduce((sum, task) => sum + task.weight, 0), 0);
     const completionPercentage = totalWeight ? Math.round((completedWeight / totalWeight) * 100) : 0;
 
     return (
@@ -262,13 +261,13 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                             <div className="text-xs mt-1">{completionPercentage}% Complete</div>
                         </div>
 
-                        {/* Task groups section */}
+                        {/* Task tasks section */}
                         <div className="space-y-4">
-                            {groups.map(group => (
-                                <div key={group.id} className="space-y-2">
-                                    {/* Group header with edit/remove controls */}
+                            {tasks.map(Task => (
+                                <div key={Task.id} className="space-y-2">
+                                    {/* Task header with edit/remove controls */}
                                     <div className="flex items-center justify-between pl-2 mb-2">
-                                        {editingId === group.id ? (
+                                        {editingId === Task.id ? (
                                             <input
                                                 ref={inputRef}
                                                 type="text"
@@ -282,13 +281,13 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                         ) : (
                                             <div
                                                 className="text-lg font-medium cursor-pointer break-words"
-                                                onClick={() => startEdit(group.id, group.name)}
+                                                onClick={() => startEdit(Task.id, Task.name)}
                                             >
-                                                {group.name}
+                                                {Task.name}
                                             </div>
                                         )}
                                         <button
-                                            onClick={() => removeGroup(group.id)}
+                                            onClick={() => removeTask(Task.id)}
                                             className="p-1 hover:text-red-500 transition-colors"
                                         >
                                             <X size={14} />
@@ -296,7 +295,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                     </div>
 
                                     {/* Tasks list with completion toggles and weight controls */}
-                                    {group.tasks.map(task => (
+                                    {Task.tasks.map(task => (
                                         <div
                                             key={task.id}
                                             className="group"
@@ -307,7 +306,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                             ? 'bg-green-500'
                                                             : 'border-2 border-base-300'
                                                         } flex items-center justify-center transition-colors duration-200`}
-                                                    onClick={() => toggleTask(group.id, task.id)}
+                                                    onClick={() => toggleTask(Task.id, task.id)}
                                                 >
                                                     {task.completed && (
                                                         <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -339,8 +338,8 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                 )}
                                                 <div className="flex items-center gap-1">
                                                     <button
-                                                        onClick={() => setGroups(groups.map(g =>
-                                                            g.id === group.id
+                                                        onClick={() => setTasks(tasks.map(g =>
+                                                            g.id === Task.id
                                                                 ? {
                                                                     ...g,
                                                                     tasks: g.tasks.map(t =>
@@ -357,8 +356,8 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                     </button>
                                                     <span className="text-xs w-6 text-center">{task.weight}</span>
                                                     <button
-                                                        onClick={() => setGroups(groups.map(g =>
-                                                            g.id === group.id
+                                                        onClick={() => setTasks(tasks.map(g =>
+                                                            g.id === Task.id
                                                                 ? {
                                                                     ...g,
                                                                     tasks: g.tasks.map(t =>
@@ -374,7 +373,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                                                         +
                                                     </button>
                                                     <button
-                                                        onClick={() => removeTask(group.id, task.id)}
+                                                        onClick={() => removeItem(Task.id, task.id)}
                                                         className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:text-red-500 transition-colors"
                                                     >
                                                         <X size={14} />
@@ -386,7 +385,7 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
 
                                     {/* Add new task button */}
                                     <button
-                                        onClick={() => addTask(group.id)}
+                                        onClick={() => addItem(Task.id)}
                                         className="w-full text-left py-1.5 pl-16 text-xs text-base-content/50 hover:bg-base-300/20 rounded-lg"
                                     >
                                         + Add item
@@ -395,9 +394,9 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
                             ))}
                         </div>
 
-                        {/* Add new group button */}
+                        {/* Add new Task button */}
                         <button
-                            onClick={addGroup}
+                            onClick={addTask}
                             className="w-full text-left py-1.5 pl-2 text-xs text-base-content/50 hover:bg-base-300/20 rounded-lg"
                         >
                             + Add Task

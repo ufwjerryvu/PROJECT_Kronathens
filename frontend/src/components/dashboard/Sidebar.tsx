@@ -71,7 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
             setSelectedGroupId(lastGroup.id || '');
             onGroupSelect(lastGroup.id || '');
         }
-    }, [groups]);
+        /* The dependency was just `groups` now changed to `groups.length` so it doesn't jump. */
+    }, [groups.length]);
 
     /* Checking window size */
     const [showAddLabel, setShowAddLabel] = React.useState(true);

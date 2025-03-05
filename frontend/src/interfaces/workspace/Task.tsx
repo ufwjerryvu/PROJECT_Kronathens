@@ -1,7 +1,8 @@
-/* Task interface defining core properties for individual task items */
+import { Subtask } from './Subtask';
+
+/* Task interface for organizing collections of related tasks */
 export interface Task {
     id: string;
-    text: string;
-    completed: boolean;
-    weight: number;
+    name: string;
+    tasks: Subtask[];
 }
