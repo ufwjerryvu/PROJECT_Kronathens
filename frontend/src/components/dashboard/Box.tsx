@@ -8,8 +8,10 @@ import EmptyState from './EmptyState.tsx';
 import sortCards from './Sorter.tsx';
 import Workspace from '../workspace/Workspace.tsx';
 
-import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
-import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
+import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.tsx';
+import { CardInformation } from '../../interfaces/dashboard/CardInformation.tsx';
+import { Task } from '../../interfaces/workspace/Task.tsx';
+
 
 const Box: React.FC = () => {
     type ViewType = 'card' | 'list';
@@ -63,7 +65,7 @@ const Box: React.FC = () => {
         setIsWorkspaceOpen(false);
 
         /* Clear after animation */
-        setTimeout(() => setSelectedCard(null), 300); 
+        setTimeout(() => setSelectedCard(null), 300);
     };
 
     /* Delete the card */
@@ -149,7 +151,7 @@ const Box: React.FC = () => {
                 </div>
             );
         }
-        
+
         /* This one is card type selected */
         return (
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 p-2 sm:p-4 overflow-auto'>
@@ -178,6 +180,7 @@ const Box: React.FC = () => {
         setDescription('');
     };
 
+    /* Adds a checklist, or a workspace, if you prefer to call it that instead */
     const handleAddChecklist = (title: string, description: string) => {
         /* If the title is empty then we give a nice looking format of the
             date today as the title */
@@ -192,12 +195,13 @@ const Box: React.FC = () => {
         /* Creating a new card/checklist item */
         const newCardItem: CardInformation = {
             /* Hard coding the ID for now */
-            id: 0,
+            id: Date.now(),
             title: newTitle,
             dateCreated: new Date(),
             dateModified: new Date(),
             taskCount: 0,
-            completionPercentage: 0
+            completionPercentage: 0,
+            tasks: []
         }
 
         const updatedCurrentGroup: GroupInformation = {
@@ -211,6 +215,33 @@ const Box: React.FC = () => {
         )
         setGroups(updatedGroups);
     }
+
+    /* Handle card updates from the Workspace component */
+    const handleUpdateCard = (updatedCard: CardInformation) => {
+        /* Update the card in the current group */
+        if (currentGroup && currentGroup.cards) {
+            /* Create a new array of cards with the updated card */
+            const updatedCards = currentGroup.cards.map(card =>
+                card.id === updatedCard.id ? updatedCard : card
+            );
+
+            /* Update the current group with the new cards array */
+            const updatedGroup = {
+                ...currentGroup,
+                cards: updatedCards
+            };
+
+            /* Set the current group to the updated group */
+            setCurrentGroup(updatedGroup);
+
+            /* Also update the group in the groups array */
+            setGroups(prevGroups =>
+                prevGroups.map(group =>
+                    group.id === currentGroup.id ? updatedGroup : group
+                )
+            );
+        }
+    };
 
     return (
         <div className='container mx-auto pt-12 pb-12 px-4'>
@@ -249,9 +280,9 @@ const Box: React.FC = () => {
                 <div className='flex-[0.25] min-w-[200px] bg-base-300 p-4 rounded-l-3xl overflow-hidden'>
                     <Sidebar groups={groups} onAddGroup={handleConfirmGroupCreation} onGroupSelect={handleGroupSelection} />
                 </div>
-                
+
                 {/* Added relative positioning */}
-                <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col relative'> 
+                <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col relative'>
                     {groups.length > 0 ? (
                         <>
                             <div className='w-full bg-base-200 pb-3'>
@@ -269,6 +300,7 @@ const Box: React.FC = () => {
                                 isOpen={isWorkspaceOpen}
                                 onClose={handleWorkspaceClose}
                                 card={selectedCard}
+                                onUpdateCard={handleUpdateCard}
                             />
                         </>
                     ) : (

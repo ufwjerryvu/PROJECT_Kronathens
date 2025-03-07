@@ -35,34 +35,65 @@ module.exports = {
       {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
-          primary: "#2dd4bf",           // Teal 400
+          // Primary: Rich teal - modern, professional, versatile
+          primary: "#0891b2",           // Cyan 600 - balanced saturation for good visibility
           "primary-content": "#ffffff",
-          secondary: "#f97316",         // Orange 500
+          "primary-focus": "#0e7490",   // Cyan 700 - deeper for focus states
+          "primary-light": "#cffafe",   // Cyan 100 - subtle background
+          
+          // Secondary: Warm amber - energetic complement to teal
+          secondary: "#d97706",         // Amber 600 - rich amber for strong accents
           "secondary-content": "#ffffff",
-          "secondary-focus": "#ea580c", // Orange 600
-          "secondary-light": "#ffedd5", // Orange 100
-          accent: "#06b6d4",           // Cyan 500
-          neutral: "#6b7280",        // Using gray-500 color
+          "secondary-focus": "#b45309", // Amber 700 - deeper for focus
+          "secondary-light": "#fef3c7", // Amber 100 - subtle background
+          
+          // Accent: Soft purple - distinctive without overwhelming
+          accent: "#7c3aed",           // Violet 600 - vivid but not harsh
+          "accent-content": "#ffffff",
+          "accent-focus": "#6d28d9",    // Violet 700 - deeper for focus
+          "accent-light": "#ede9fe",    // Violet 100 - subtle background
+          
+          // Neutral: Slate tones - sophisticated gray with subtle blue undertones
+          neutral: "#475569",           // Slate 600 - perfect contrast for text
           "neutral-content": "#ffffff",
+          "neutral-focus": "#334155",    // Slate 700 - deeper for focus
+          
+          // Base colors: Clean with subtle depth variations
           "base-100": "#ffffff",
-          "base-200": "#f3f4f6",
-          "base-300": "#e5e7eb",
+          "base-200": "#f8fafc",        // Slate 50 - more refined differentiation
+          "base-300": "#f1f5f9",        // Slate 100 - subtle differentiation
+          "base-content": "#0f172a",    // Slate 900 - ideal text contrast
         },
         dark: {
           ...require("daisyui/src/theming/themes")["dark"],
-          primary: "#5eead4",           // Teal 300
-          "primary-content": "#134e4a", // Teal 900
-          secondary: "#fb923c",         // Orange 400
-          "secondary-content": "#431407", // Orange 950
-          "secondary-focus": "#f97316", // Orange 500
-          "secondary-light": "#7c2d12", // Orange 900
-          accent: "#22d3ee",           // Cyan 400
-          neutral: "#1f2937",          // Gray 800
-          neutral: "#6b7280",        // Using gray-500 color
-          "neutral-content": "#ffffff",
-          "base-100": "#111827",       // Gray 900
-          "base-200": "#1f2937",       // Gray 800
-          "base-300": "#374151",       // Gray 700
+          // Primary: Brighter teal for dark mode visibility
+          primary: "#22d3ee",           // Cyan 400 - vibrant for dark backgrounds
+          "primary-content": "#164e63", // Cyan 900 - dark text on light buttons
+          "primary-focus": "#06b6d4",   // Cyan 500 - focus state
+          "primary-light": "#155e75",   // Cyan 800 - subtle backgrounds
+          
+          // Secondary: Bright amber for contrast against dark backgrounds
+          secondary: "#f59e0b",         // Amber 500 - vibrant but not harsh
+          "secondary-content": "#78350f", // Amber 900 - dark text on light buttons
+          "secondary-focus": "#d97706", // Amber 600 - focus state
+          "secondary-light": "#92400e", // Amber 800 - subtle backgrounds
+          
+          // Accent: Brighter violet for visibility in dark mode
+          accent: "#8b5cf6",           // Violet 500 - rich accent
+          "accent-content": "#4c1d95",  // Violet 900 - dark text on light buttons
+          "accent-focus": "#7c3aed",    // Violet 600 - focus state
+          "accent-light": "#6d28d9",    // Violet 700 - subtle backgrounds
+          
+          // Neutral: Lighter grays for better visibility
+          neutral: "#94a3b8",          // Slate 400 - optimal contrast for dark mode
+          "neutral-content": "#0f172a", // Slate 900 - text color
+          "neutral-focus": "#cbd5e1",   // Slate 300 - focus state
+          
+          // Base colors: Rich dark theme with subtle blue undertones
+          "base-100": "#0f172a",       // Slate 900 - rich dark background
+          "base-200": "#1e293b",       // Slate 800 - subtly lighter
+          "base-300": "#334155",       // Slate 700 - for elevation
+          "base-content": "#f1f5f9",   // Slate 100 - crisp text contrast
         }
       }
     ]

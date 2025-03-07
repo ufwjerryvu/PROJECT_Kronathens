@@ -1,3 +1,5 @@
+import { Task } from '../../interfaces/workspace/Task.tsx';
+
 export interface CardInformation {
     id: number,
     title: string,
@@ -5,4 +7,5 @@ export interface CardInformation {
     dateModified: Date,
     completionPercentage: number,
     taskCount: number
+    tasks: Task[]
 };
