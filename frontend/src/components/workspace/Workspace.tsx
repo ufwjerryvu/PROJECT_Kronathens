@@ -9,10 +9,11 @@ interface WorkspaceProps {
     isOpen: boolean;
     onClose: () => void;
     card: CardInformation | null;
+    onUpdateCard?: (updatedCard: CardInformation) => void;
 }
 
 /* Main workspace component for managing task tasks and individual tasks with progress tracking */
-const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
+const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
     /* Stores all task tasks and their subtasks */
     const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -24,6 +25,49 @@ const Workspace = ({ isOpen, onClose, card }: WorkspaceProps) => {
 
     /* Reference for auto-focusing input fields */
     const inputRef = useRef<HTMLInputElement>(null);
+    
+    /* Previous card reference to detect card changes */
+    const prevCardRef = useRef<CardInformation | null>(null);
+
+    /* Initialize or reset tasks only when card changes */
+    useEffect(() => {
+        if (card) {
+        setTasks(card.tasks || []);
+        
+        /* Reset editing states */
+        setEditingId(null);
+        setNewName('');
+        } else {
+        /* If no card, set empty tasks */
+        setTasks([]);
+        }
+    }, [card]);
+
+    /* Update parent component whenever tasks change */
+    useEffect(() => {
+        if (card && onUpdateCard) {
+            /* Calculate new completion percentage */
+            const totalWeight = tasks.reduce((acc, task) =>
+                acc + task.tasks.reduce((sum, subtask) => sum + subtask.weight, 0), 0);
+            const completedWeight = tasks.reduce((acc, task) =>
+                acc + task.tasks.filter(t => t.completed).reduce((sum, subtask) => sum + subtask.weight, 0), 0);
+            const completionPercentage = totalWeight ? Math.round((completedWeight / totalWeight) * 100) : 0;
+            
+            /* Count total tasks */
+            const taskCount = tasks.reduce((acc, task) => acc + task.tasks.length, 0);
+            
+            /* Create updated card */
+            const updatedCard: CardInformation = {
+                ...card,
+                tasks: tasks,
+                completionPercentage: completionPercentage,
+                taskCount: taskCount,
+                dateModified: new Date()
+            };
+            
+            onUpdateCard(updatedCard);
+        }
+    }, [tasks, card, onUpdateCard]);
 
     /* Toggles completion status of a specific task within a Task */
     const toggleTask = (TaskId: string, taskId: string) => {
