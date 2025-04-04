@@ -1,4 +1,4 @@
-import { Task } from '../../interfaces/workspace/Task.tsx';
+import { Task } from '../../interfaces/workspace/Task';
 
 export interface CardInformation {
     id: number,
