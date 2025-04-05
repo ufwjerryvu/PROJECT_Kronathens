@@ -1,16 +1,16 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
-import Header from './Header.tsx';
-import Card from './CardItem.tsx';
-import ListItem from './ListItem.tsx';
-import Sidebar from './Sidebar.tsx';
-import EmptyState from './EmptyState.tsx';
-import sortCards from './Sorter.tsx';
-import Workspace from '../workspace/Workspace.tsx';
+import Header from './Header';
+import Card from './CardItem';
+import ListItem from './ListItem';
+import Sidebar from './Sidebar';
+import EmptyState from './EmptyState';
+import sortCards from './Sorter';
+import Workspace from '../workspace/Workspace';
 
-import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.tsx';
-import { CardInformation } from '../../interfaces/dashboard/CardInformation.tsx';
-import { Task } from '../../interfaces/workspace/Task.tsx';
+import { GroupInformation } from '../../interfaces/dashboard/GroupInformation';
+import { CardInformation } from '../../interfaces/dashboard/CardInformation';
+import { Task } from '../../interfaces/workspace/Task';
 
 
 const Box: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 
-import { Task } from '../../interfaces/workspace/Task.tsx';
+import { Task } from '../../interfaces/workspace/Task';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 
 /* Props interface defining the workspace component's configuration options */

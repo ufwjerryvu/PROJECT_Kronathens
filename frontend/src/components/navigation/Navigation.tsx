@@ -2,7 +2,7 @@ import { useState } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ThemeToggler from './ThemeToggler.tsx';
+import ThemeToggler from './ThemeToggler';
 
 const Navigation: React.FC = () => {
     const [isLoggedIn] = useState<boolean>(false);

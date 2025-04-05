@@ -24,7 +24,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "env": {
+      "node": true
+    }
   },
   "browserslist": {
     "production": [
@@ -39,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^22.13.9",
     "autoprefixer": "^10.4.20",
     "daisyui": "^4.12.14",
     "postcss": "^8.4.49",

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
 
-import { GroupInformation } from '../../interfaces/dashboard/GroupInformation.ts';
-import { CardInformation } from '../../interfaces/dashboard/CardInformation.ts';
+import { GroupInformation } from '../../interfaces/dashboard/GroupInformation';
+import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 
 interface SidebarProps {
     groups: GroupInformation[],
@@ -94,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
         <div ref={sidebarRef} className='h-full flex flex-col p-2 pt-4'>
             {/* Header */}
             <div className='flex items-center justify-between mb-6 px-2'>
-                <h2 className='text-lg font-semibold text-base-content/80 truncate'>All Groups</h2>
+                <h2 className='text-lg font-semibold text-base-content/80 truncate'>Collection</h2>
                 <button
                     onClick={handleAddGroupButton}
                     className='h-9 px-3 bg-secondary text-secondary-content rounded-full flex items-center gap-1.5 text-sm 

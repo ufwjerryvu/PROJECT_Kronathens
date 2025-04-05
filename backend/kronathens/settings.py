@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     
     # Locally defined applications
     'accounts',
+    'checklists',
 ]
 
 # Custom changes block

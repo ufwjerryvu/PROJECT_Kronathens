@@ -2,7 +2,7 @@ import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import Navigation from '../components/navigation/Navigation.tsx';
+import Navigation from '../components/navigation/Navigation';
 
 /* Interface for storing signin credentials */
 interface LoginCredentials {
