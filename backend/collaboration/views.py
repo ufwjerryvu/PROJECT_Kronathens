@@ -90,3 +90,38 @@ def delete_group(request, group_id):
     except:
         return Response({"error": "Group not found or you don't have permission."},
                         status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def toggle_join_group(request, group_id):
+    """
+    If the currently authenticated user is already a part of the group, then 
+    unjoin upon function call. If not already a part of a group then join.
+    """
+    user = request.user.id
+
+    try:
+        group = Group.objects.get(id=group_id)
+        
+        try:
+            # Delete if found
+            contributor = Contributor.objects.get(group_id=group_id, user_id=user)
+            contributor.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        except Contributor.DoesNotExist:
+            # Create if not found
+            request.data["user"] = user
+            request.data["group"] = group_id
+
+            serializer = ContributorSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Group.DoesNotExist:
+        return Response({"error": "Group not found or you don't have permission."},
+                        status=status.HTTP_404_NOT_FOUND)
+    

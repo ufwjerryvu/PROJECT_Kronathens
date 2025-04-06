@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ChecklistsConfig(AppConfig):
+class CollaborationConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'checklists'
+    name = 'collaboration'

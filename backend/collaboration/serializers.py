@@ -22,3 +22,13 @@ class GroupCreateSerializer(serializers.ModelSerializer):
         model = Group
         fields = ["id", "creator", "name", "description"]
         read_only_fields = ["id"]
+    
+class ContributorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for a contributor within a group.
+    """
+    
+    class Meta:
+        model = Contributor
+        fields = ["id", "user", "group"]
+        read_only_fields = ["id"]

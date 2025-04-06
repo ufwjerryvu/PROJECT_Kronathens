@@ -19,3 +19,18 @@ class Group(models.Model):
     name = models.CharField(max_length=32, null=False)
     description = models.TextField(null=True)
 
+class Contributor(models.Model):
+    """
+    Group contributor is the contributor to a group. This is basically a junct-
+    ion table.
+    """
+
+    class Meta:
+        db_table = "Contributor"
+        verbose_name = "Contributor"
+        verbose_name_plural = "Contributors"
+    
+    # The group ID and the user ID are linked. 
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
