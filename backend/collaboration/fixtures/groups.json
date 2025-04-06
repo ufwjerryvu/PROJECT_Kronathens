@@ -1,0 +1,137 @@
+[
+    {
+      "model": "collaboration.group",
+      "pk": 1,
+      "fields": {
+        "creator": 1,
+        "name": "University",
+        "description": "Tasks and deadlines for my computer science degree program"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 2,
+      "fields": {
+        "creator": 1,
+        "name": "Personal Projects",
+        "description": "Side programming projects and learning goals"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 3,
+      "fields": {
+        "creator": 2,
+        "name": "Work",
+        "description": "Professional tasks and client meetings"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 4,
+      "fields": {
+        "creator": 2,
+        "name": "Home Renovation",
+        "description": "Planning and tracking our kitchen remodel"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 5,
+      "fields": {
+        "creator": 3,
+        "name": "Travel",
+        "description": "Packing lists and itineraries for upcoming trips"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 6,
+      "fields": {
+        "creator": 4,
+        "name": "Fitness",
+        "description": "Workout routines and nutrition planning"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 7,
+      "fields": {
+        "creator": 5,
+        "name": "Reading List",
+        "description": "Books to read and reading progress"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 8,
+      "fields": {
+        "creator": 6,
+        "name": "Family",
+        "description": "Family events, birthdays, and responsibilities"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 9,
+      "fields": {
+        "creator": 7,
+        "name": "Garden",
+        "description": "Planting schedule and maintenance tasks"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 10,
+      "fields": {
+        "creator": 8,
+        "name": "Photography",
+        "description": "Photo shoots, editing workflow, and equipment maintenance"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 11,
+      "fields": {
+        "creator": 9,
+        "name": "Music Practice",
+        "description": "Guitar practice schedule and songs to learn"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 12,
+      "fields": {
+        "creator": 10,
+        "name": "Cooking",
+        "description": "Recipe ideas and meal planning for the week"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 13,
+      "fields": {
+        "creator": 3,
+        "name": "Learning Korean",
+        "description": "Language study progress and vocabulary lists"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 14,
+      "fields": {
+        "creator": 5,
+        "name": "Home Maintenance",
+        "description": "Seasonal home maintenance tasks and repairs"
+      }
+    },
+    {
+      "model": "collaboration.group",
+      "pk": 15,
+      "fields": {
+        "creator": 7,
+        "name": "Art Projects",
+        "description": "Ideas and supplies for upcoming art projects"
+      }
+    }
+  ]
