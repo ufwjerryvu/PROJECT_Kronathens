@@ -16,8 +16,8 @@ class Group(models.Model):
     
     # The user holds the creator ID. We delete the groups if the user is deleted.
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=32, null=False)
-    description = models.TextField(null=True)
+    name = models.CharField(max_length=32, null=False, blank=False)
+    description = models.TextField(null=True, blank=True)
 
 class Contributor(models.Model):
     """
