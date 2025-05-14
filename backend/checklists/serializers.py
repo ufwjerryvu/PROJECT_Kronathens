@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
-from .models import Workspace, Item, Subitems
+from .models import Workspace, Item, Subitem
 
 class CreateWorkspaceSerializer(serializers.ModelSerializer):
     """
     Serializer to create a workspace. 
     """
     class Meta:
+        model = Workspace
         fields = ["id", "group", "name", "description"]
         read_only_fields = ["id"]
 
@@ -17,6 +18,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     group is created. 
     """
     class Meta:
+        model = Workspace
         fields = ["id", "group", "name", "description"]
         read_only_fields = ["id", "group"]
 
@@ -26,6 +28,7 @@ class CreateItemSerializer(serializers.ModelSerializer):
     belongs to and its ID.
     """
     class Meta:
+        model = Item
         fields = ["id", "workspace", "heading"]
         read_only_fields = ["id"]
 
@@ -35,6 +38,7 @@ class ItemSerializer(serializers.ModelSerializer):
     space that it belongs to. 
     """
     class Meta:
+        model = Item
         fields = ["id", "workspace", "heading"]
         read_only_fields = ["id", "workspace"]
 
@@ -43,6 +47,7 @@ class CreateSubitemSerializer(serializers.ModelSerializer):
     A create serializer for subitems. Only for the creation of the content.
     """
     class Meta:
+        model = Subitem
         fields = ["id", "item", "content", "weight", "completion_status"]
         read_only_fields = ["id"]
     
@@ -52,5 +57,6 @@ class SubitemSerializer(serializers.ModelSerializer):
     nt except ID and the ID of the item the subitem belongs to.
     """
     class Meta:
+        model = Subitem
         fields = ["id", "item", "content", "weight", "completion_status"]
         read_only_fields = ["id", "item"]
