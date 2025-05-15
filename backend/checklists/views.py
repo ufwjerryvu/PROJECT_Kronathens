@@ -9,6 +9,27 @@ from collaboration.models import Group, Contributor
 from .models import *
 from .serializers import *
 
+def workspace_exists(workspace_id):
+    """
+    Checks if a workspace exists. Returns true if it does and false if not.
+    """
+    try:
+        workspace = Workspace.objects.get(id=workspace_id)
+    except Workspace.DoesNotExist:
+        return False
+    return True
+
+def user_can_modify(group_id, user_id):
+    """
+    Checks if the user has the permission to edit the workspace. Returns true 
+    if yes and false otherwise.
+    """
+    try:
+        Contributor.objects.get(group=group_id, user=user_id)
+    except Contributor.DoesNotExist:
+        return False
+    return True
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_workspaces(request, group_id):
@@ -119,3 +140,61 @@ def delete_workspace(request, workspace_id):
     
     workspace.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_items(request, workspace_id):
+    """
+    Get all items from a workspace. User has to be authorized. No need for a m-
+    ethod that finds individual items.
+    """
+    user = request.user.id
+
+    # Check if the workspace that the user is asking for is valid.
+    try:
+        workspace = Workspace.objects.get(id=workspace_id)
+
+        # Check if the user has permissions to access the workspace
+        try:
+            Contributor.objects.get(id=workspace.group.id, user=user)
+        except Contributor.DoesNotExist:
+            return Response({"error": "You do not have permission to access "
+                             "workspace."}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Workspace.DoesNotExist:
+        return Response({"error": "Workspace does not exist or you do not have "
+                         "permission to edit this workspace."}, 
+                         status=status.HTTP_400_BAD_REQUEST)
+
+    items = Item.objects.filter(workspace=workspace_id)
+    serializer = ItemSerializer(items, many=True)
+
+    return Response(serializer.data,status=status.HTTP_200_OK)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_item(request, workspace_id):
+    """
+    Creates an item in the workspace. 
+    """
+    user = request.user.id
+
+    if not workspace_exists(workspace_id=workspace_id):
+        return Response({"error": "Workspace not found or you do not have "
+                         "permissions to edit this workspace"}, 
+                         status=status.HTTP_400_BAD_REQUEST)
+
+    workspace = Workspace.objects.get(id=workspace_id)
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permissions to edit this "
+                         "workspace"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    copy = request.data
+    copy["workspace"] = workspace_id
+    serializer = CreateItemSerializer(data=copy)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
