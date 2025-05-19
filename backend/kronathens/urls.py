@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 
     path('api/collaboration/', include('collaboration.urls')),
+    path('api/checklists/', include('checklists.urls'))
 ]

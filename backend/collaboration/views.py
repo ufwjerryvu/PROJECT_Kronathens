@@ -19,7 +19,7 @@ def get_all_groups(request):
     user = request.user.id
 
     groups = Group.objects.filter(creator=user)
-    serializer = GroupGeneralSerializer(groups, many=True)
+    serializer = GroupSerializer(groups, many=True)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -32,7 +32,7 @@ def get_group_from_id(request, group_id):
     user = request.user.id
 
     group = Group.objects.get(creator=user, id=group_id)
-    serializer = GroupGeneralSerializer(group)
+    serializer = GroupSerializer(group)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -48,10 +48,13 @@ def create_group(request):
     copy = request.data
     copy["creator"] = request.user.id
 
-    serializer = GroupCreateSerializer(data=copy)
+    serializer = CreateGroupSerializer(data=copy)
 
     if serializer.is_valid():
-        serializer.save()
+        group = serializer.save()
+        
+        # Add the creator as a contributor as we create a group
+        Contributor.objects.create(user_id=request.user.id, group_id=group.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -67,7 +70,7 @@ def modify_group_details(request, group_id):
     user = request.user.id
     group = Group.objects.get(creator=user, id=group_id)
 
-    serializer = GroupGeneralSerializer(group, data=request.data, partial=True)
+    serializer = GroupSerializer(group, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
