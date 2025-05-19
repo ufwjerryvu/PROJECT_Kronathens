@@ -96,7 +96,7 @@ def modify_workspace_details(request, workspace_id):
                                     user=user)
         except Contributor.DoesNotExist:
             return Response({"error": "You do not have permission to edit this "
-                            "workspace"}, status=status.HTTP_400_BAD_REQUEST)
+                            "workspace"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
     except Workspace.DoesNotExist:
@@ -136,7 +136,7 @@ def delete_workspace(request, workspace_id):
         Contributor.objects.get(group=workspace.group, user=user)
     except Contributor.DoesNotExist:
         return Response({"error": "You do not have permission to edit this "
-                         "workspace"}, status=status.HTTP_400_BAD_REQUEST)
+                         "workspace"}, status=status.HTTP_401_UNAUTHORIZED)
     
     workspace.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
@@ -159,7 +159,7 @@ def get_all_items(request, workspace_id):
             Contributor.objects.get(id=workspace.group.id, user=user)
         except Contributor.DoesNotExist:
             return Response({"error": "You do not have permission to access "
-                             "workspace."}, status=status.HTTP_400_BAD_REQUEST)
+                             "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
 
     except Workspace.DoesNotExist:
         return Response({"error": "Workspace does not exist or you do not have "
@@ -187,7 +187,7 @@ def create_item(request, workspace_id):
     workspace = Workspace.objects.get(id=workspace_id)
     if not user_can_modify(group_id=workspace.group.id, user_id=user):
         return Response({"error": "You do not have permissions to edit this "
-                         "workspace"}, status=status.HTTP_400_BAD_REQUEST)
+                         "workspace"}, status=status.HTTP_401_UNAUTHORIZED)
     
     copy = request.data
     copy["workspace"] = workspace_id
@@ -198,3 +198,62 @@ def create_item(request, workspace_id):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def modify_item(request, item_id):
+    """
+    Lets the user modify an item. But we need to know that the user can access
+    the workspace. 
+    """
+    try:
+        item = Item.objects.get(id=item_id)
+    except Item.DoesNotExist:
+        return Response({"error": "Item does not exist"}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    if not workspace_exists(workspace_id=item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not have "
+                        "permissions to edit this workspace"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    workspace = Workspace.objects.get(id=item.workspace.id)
+    if not user_can_modify(group_id=workspace.group.id, user_id=request.user.id):
+        return Response({"error": "You do not have permissions to edit this "
+                         "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
+
+    
+    item = Item.objects.get(id=item_id)
+    serializer = ItemSerializer(item, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_item(request, item_id):
+    """
+    Lets the user delete an item.
+    """
+    user = request.user.id
+
+    try:
+        item = Item.objects.get(id=item_id)
+    except Item.DoesNotExist:
+        return Response({"error": "Item does not exist"}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+    if not workspace_exists(workspace_id=item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not have "
+                         "permissions to edit this workspace. "},
+                         status=status.HTTP_400_BAD_REQUEST)
+    
+    if not user_can_modify(group_id=item.workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                         "workspace"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    item.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
