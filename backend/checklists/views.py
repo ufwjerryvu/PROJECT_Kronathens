@@ -19,6 +19,17 @@ def workspace_exists(workspace_id):
         return False
     return True
 
+def item_exists(item_id):
+    """
+    Checks if an item exists. Returns true if it does and false if otherwise.
+    """
+    try:
+        Item.objects.get(id=item_id)
+    except Item.DoesNotExist:
+        return False
+
+    return True
+
 def user_can_modify(group_id, user_id):
     """
     Checks if the user has the permission to edit the workspace. Returns true 
@@ -257,3 +268,173 @@ def delete_item(request, item_id):
     
     item.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_subitems(request, item_id):
+    """
+    Lets the user list all subitems of an item, given the item's ID.
+    """
+    user = request.user.id
+
+    if not item_exists(item_id):
+        return Response({"error": "Item does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    item = Item.objects.get(id=item_id)
+
+    if not workspace_exists(item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not "
+                            "have permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    workspace = Workspace.objects.get(id=item.workspace.id)
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                            "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    subitems = Subitem.objects.filter(item=item_id)
+    serializer = SubitemSerializer(subitems, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_subitem(request, item_id):
+    """
+    Lets the user create a subitem under an item, given the item's ID.
+    """
+    user = request.user.id
+
+    if not item_exists(item_id):
+        return Response({"error": "Item does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    item = Item.objects.get(id=item_id)
+
+    if not workspace_exists(item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not "
+                            "have permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    
+    workspace = Workspace.objects.get(id=item.workspace.id)
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                            "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+
+    copy = request.data
+    copy["item"] = item_id
+    serializer = CreateSubitemSerializer(data=copy)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def modify_subitem(request, subitem_id):
+    """
+    Allows the user to modify the subitems in the list. 
+    """
+    user = request.user.id
+
+    try:
+        subitem = Subitem.objects.get(id=subitem_id)
+    except Subitem.DoesNotExist:
+        return Response({"error": "Subitem does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    item_id = subitem.item.id
+    if not item_exists(item_id):
+        return Response({"error": "Item does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    item = Item.objects.get(id=item_id)
+
+    if not workspace_exists(item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not "
+                            "have permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    
+    workspace = Workspace.objects.get(id=item.workspace.id)
+
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                            "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    serializer = SubitemSerializer(subitem, data=request.data, partial=True)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_subitem(request, subitem_id):
+    """
+    Allows the user to delete a subitem, if they are authorized and the subitem
+    exists, that is. 
+    """
+    user = request.user.id
+
+    try:
+        subitem = Subitem.objects.get(id=subitem_id)
+    except Subitem.DoesNotExist:
+        return Response({"error": "Subitem does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    item_id = subitem.item.id
+    if not item_exists(item_id):
+        return Response({"error": "Item does not exist or you do not have "
+                            "permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    item = Item.objects.get(id=item_id)
+
+    if not workspace_exists(item.workspace.id):
+        return Response({"error": "Workspace does not exist or you do not "
+                            "have permissions to edit this workspace."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    
+    workspace = Workspace.objects.get(id=item.workspace.id)
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                            "workspace."}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    subitem.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_workspace_aggr_content(request, workspace_id):
+    """
+    Gets all the items and subitems in a workspace. 
+    """
+    user = request.user.id
+
+    if not workspace_exists(workspace_id):
+        return Response({"error": "Workspace not found or you do not have "
+                            "permission to edit it."},
+                            status=status.HTTP_400_BAD_REQUEST)
+    
+    workspace = Workspace.objects.prefetch_related(
+        'item_set__subitem_set'  # to avoid N + 1 query problems
+    ).get(id=workspace_id)
+
+    if not user_can_modify(group_id=workspace.group.id, user_id=user):
+        return Response({"error": "You do not have permission to edit this "
+                            "workspace"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    serializer = AggregatedWorkspaceSerializer(workspace)
+
+    return Response(serializer.data, status=status.HTTP_200_OK) 

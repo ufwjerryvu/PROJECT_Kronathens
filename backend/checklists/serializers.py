@@ -60,3 +60,26 @@ class SubitemSerializer(serializers.ModelSerializer):
         model = Subitem
         fields = ["id", "item", "content", "weight", "completion_status"]
         read_only_fields = ["id", "item"]
+
+class AggregatedItemSerializer(serializers.ModelSerializer):
+    """
+    A serializer that contains an item and the subitems. 
+    """
+    subitem_set = SubitemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Item
+        fields = "__all__"
+        read_only = True 
+
+class AggregatedWorkspaceSerializer(serializers.ModelSerializer):
+    """
+    A serializer that contains all items and subitems in the workspace along wi-
+    th their contents.
+    """
+    item_set = AggregatedItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Workspace
+        fields = "__all__"
+        read_only = True 
