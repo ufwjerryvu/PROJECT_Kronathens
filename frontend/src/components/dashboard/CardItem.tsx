@@ -8,8 +8,8 @@ interface CardProps {
     completionPercentage: number;
     taskCount: number;
     
-    onCardClick: (id: string) => void;  // New handler for card click
-    onEdit: (id: string) => void;       // Existing edit handler
+    onCardClick: (id: string) => void; 
+    onEdit: (id: string) => void;      
     onDelete: (id: string) => void;
     onAddCollaborator: (id: string) => void;
 }

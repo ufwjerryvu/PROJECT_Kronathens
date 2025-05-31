@@ -5,14 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/authentication/AuthContext';
 import Navigation from '../components/navigation/Navigation';
 
-/* Interface for storing signin credentials */
 interface LoginCredentials {
     username: string;
     password: string;
     rememberMe: boolean;
 }
 
-/* Interface for form validation errors */
 interface ValidationErrors {
     username?: string;
     password?: string;
