@@ -4,7 +4,6 @@ import { ArrowLeft, X } from 'lucide-react';
 import { Task } from '../../interfaces/workspace/Task';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 
-/* Props interface defining the workspace component's configuration options */
 interface WorkspaceProps {
     isOpen: boolean;
     onClose: () => void;
@@ -12,38 +11,26 @@ interface WorkspaceProps {
     onUpdateCard?: (updatedCard: CardInformation) => void;
 }
 
-/* Main workspace component for managing task tasks and individual tasks with progress tracking */
 const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
-    /* Stores all task tasks and their subtasks */
     const [tasks, setTasks] = useState<Task[]>([]);
-
-    /* Tracks currently edited item's ID */
     const [editingId, setEditingId] = useState<string | null>(null);
-
-    /* Temporary storage for item being edited */
     const [newName, setNewName] = useState('');
-
-    /* Reference for auto-focusing input fields */
     const inputRef = useRef<HTMLInputElement>(null);
-    
-    /* Previous card reference to detect card changes */
     const prevCardRef = useRef<CardInformation | null>(null);
 
-    /* Initialize or reset tasks only when card changes */
     useEffect(() => {
         if (card) {
-        setTasks(card.tasks || []);
-        
-        /* Reset editing states */
-        setEditingId(null);
-        setNewName('');
+            setTasks(card.tasks || []);
+
+            /* Reset editing states */
+            setEditingId(null);
+            setNewName('');
         } else {
-        /* If no card, set empty tasks */
-        setTasks([]);
+            /* If no card, set empty tasks */
+            setTasks([]);
         }
     }, [card]);
 
-    /* Update parent component whenever tasks change */
     useEffect(() => {
         if (card && onUpdateCard) {
             /* Calculate new completion percentage */
@@ -52,10 +39,10 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
             const completedWeight = tasks.reduce((acc, task) =>
                 acc + task.tasks.filter(t => t.completed).reduce((sum, subtask) => sum + subtask.weight, 0), 0);
             const completionPercentage = totalWeight ? Math.round((completedWeight / totalWeight) * 100) : 0;
-            
+
             /* Count total tasks */
             const taskCount = tasks.reduce((acc, task) => acc + task.tasks.length, 0);
-            
+
             /* Create updated card */
             const updatedCard: CardInformation = {
                 ...card,
@@ -64,12 +51,11 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
                 taskCount: taskCount,
                 dateModified: new Date()
             };
-            
+
             onUpdateCard(updatedCard);
         }
     }, [tasks, card, onUpdateCard]);
 
-    /* Toggles completion status of a specific task within a Task */
     const toggleTask = (TaskId: string, taskId: string) => {
         setTasks(tasks.map(Task =>
             Task.id === TaskId
@@ -85,7 +71,6 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         ));
     };
 
-    /* Creates a new empty task Task and enters edit mode */
     const addTask = () => {
         const id = Date.now().toString();
         const newTask: Task = {
@@ -98,7 +83,6 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         setNewName('');
     };
 
-    /* Adds a new task to specified Task and enters edit mode */
     const addItem = (TaskId: string) => {
         const id = Date.now().toString();
         setTasks(tasks.map(Task =>
@@ -118,12 +102,10 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         setNewName('');
     };
 
-    /* Removes specified Task and all its tasks */
     const removeTask = (TaskId: string) => {
         setTasks(tasks.filter(Task => Task.id !== TaskId));
     };
 
-    /* Removes a specific task from its parent Task */
     const removeItem = (TaskId: string, taskId: string) => {
         setTasks(tasks.map(Task =>
             Task.id === TaskId
@@ -135,18 +117,15 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         ));
     };
 
-    /* Initiates edit mode for a Task or task */
     const startEdit = (id: string, currentName: string) => {
         setEditingId(id);
         setNewName(currentName);
     };
 
-    /* Updates the newName state as user types in edit field */
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewName(e.target.value);
     };
 
-    /* Saves current edit and creates new item - used for quick sequential additions */
     const saveCurrentAndAddNew = (editId: string, text: string) => {
         setTasks(prevTasks => {
             const updatedTasks = prevTasks.map(Task => {
@@ -163,7 +142,6 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
                 };
             });
 
-            /* Check if editing task within Task or Task itself */
             const Task = updatedTasks.find(g => g.tasks.some(t => t.id === editId));
 
             if (Task) {
@@ -189,7 +167,6 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         }, 0);
     };
 
-    /* Handles keyboard events for saving and creating new items */
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Tab' && editingId) {
             e.preventDefault();
@@ -235,7 +212,6 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         }
     };
 
-    /* Saves current edit when input loses focus */
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         if (!editingId) return;
 
@@ -258,14 +234,12 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
         setNewName('');
     };
 
-    /* Auto-focus input field when entering edit mode */
     useEffect(() => {
         if (editingId && inputRef.current) {
             inputRef.current.focus();
         }
     }, [editingId]);
 
-    /* Calculate completion statistics based on task weights */
     const totalWeight = tasks.reduce((acc, Task) =>
         acc + Task.tasks.reduce((sum, task) => sum + task.weight, 0), 0);
     const completedWeight = tasks.reduce((acc, Task) =>
@@ -347,8 +321,8 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
                                             <div className="flex flex-wrap items-center gap-2 py-0 pl-5">
                                                 <div
                                                     className={`w-5 h-5 rounded-full cursor-pointer ${task.completed
-                                                            ? 'bg-green-500'
-                                                            : 'border-2 border-base-300'
+                                                        ? 'bg-green-500'
+                                                        : 'border-2 border-base-300'
                                                         } flex items-center justify-center transition-colors duration-200`}
                                                     onClick={() => toggleTask(Task.id, task.id)}
                                                 >
@@ -372,8 +346,8 @@ const Workspace = ({ isOpen, onClose, card, onUpdateCard }: WorkspaceProps) => {
                                                 ) : (
                                                     <span
                                                         className={`flex-1 min-w-0 text-sm cursor-pointer break-all ${task.completed
-                                                                ? 'line-through text-base-content/50'
-                                                                : ''
+                                                            ? 'line-through text-base-content/50'
+                                                            : ''
                                                             } transition-all duration-200`}
                                                         onClick={() => startEdit(task.id, task.text)}
                                                     >

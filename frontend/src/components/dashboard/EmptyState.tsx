@@ -1,6 +1,10 @@
 import React from 'react';
 
+import { useAuth } from '../../services/authentication/AuthContext';
+
 const EmptyState = () => {
+    const {isLoggedIn} = useAuth();
+
     /* Gives you a modal to create your group */
     const handleAddGroupButton = () => {
         const modal = document.getElementById('create_group_form') as HTMLDialogElement | null;
@@ -29,11 +33,19 @@ const EmptyState = () => {
             </div>
 
             <p className='text-xl text-gray-600 font-medium mb-2 text-center px-4 sm:px-0'>
-                Create your first group
+                Create your first group to get
             </p>
             <p className='text-xl text-gray-600 font-medium mb-2 text-center px-4 sm:px-0 pb-3'>
-                to get started with Kronathens
+                 started with Kronathens.
             </p>
+
+            {
+                isLoggedIn ? (<></>) : (
+                    <p className="text-md text-gray-600 pb-5">
+                    Your data won't be saved unless you log in.
+                    </p>
+                )
+            }
 
             <button
                 className='px-6 py-2 bg-secondary text-secondary-content rounded-full 

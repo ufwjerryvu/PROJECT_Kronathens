@@ -65,7 +65,7 @@ const Navigation: React.FC = () => {
                                 </div>
                                 {isMobileMenuOpen && (
                                     <ul className='menu menu-sm dropdown-content mt-1 p-2 shadow bg-base-200 rounded-box z-[1] w-52'>
-                                        <li><a href='/' onClick={() => setIsMobileMenuOpen(false)}>Home</a></li>
+                                        <li><a href='/home' onClick={() => setIsMobileMenuOpen(false)}>Home</a></li>
                                         <li><a href='/' onClick={() => setIsMobileMenuOpen(false)}>Dashboard</a></li>
                                         <li><a href='/about' onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
                                     </ul>
@@ -88,7 +88,7 @@ const Navigation: React.FC = () => {
                         <div className='navbar-center hidden lg:flex'>
                             <ul className='menu menu-horizontal px-1 font-medium space-x-1'>
                                 <li>
-                                    <a className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' href='/'>
+                                    <a className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' href='/home'>
                                         Home
                                     </a>
                                 </li>
