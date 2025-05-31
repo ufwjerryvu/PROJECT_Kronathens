@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../services/authentication/AuthContext';
 import Navigation from '../components/navigation/Navigation';
 
 /* Interface for storing signin credentials */
@@ -18,7 +19,7 @@ interface ValidationErrors {
 }
 
 const Login: React.FC = () => {
-    /* Form state management for signin credentials */
+    const {isLoggedIn, setIsLoggedIn} = useAuth();
     const [credentials, setCredentials] = useState<LoginCredentials>({
         username: '',
         password: '',
@@ -26,11 +27,8 @@ const Login: React.FC = () => {
     });
 
     const navigate = useNavigate();
-
-    /* State for handling validation errors */
     const [errors, setErrors] = useState<ValidationErrors>({});
 
-    /* Handles input changes for the form fields */
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = event.target;
         setCredentials(prev => ({
@@ -39,11 +37,8 @@ const Login: React.FC = () => {
         }));
     };
 
-    /* Form submission handler with validation */
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
-        /* Validate form before submission */
         const newErrors: ValidationErrors = {};
 
         if (!credentials.username) {
@@ -61,7 +56,6 @@ const Login: React.FC = () => {
         if (Object.keys(newErrors).length === 0) {
             try {
                 
-                /* Login sending API request to the backend starts here */
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login/`, {
                     method: 'POST',
                     headers: {
@@ -78,7 +72,9 @@ const Login: React.FC = () => {
                 if(response.ok){
                     localStorage.setItem('access_token', data.access);
                     localStorage.setItem('refresh_token', data.refresh);
-
+                    
+                    setIsLoggedIn(true);
+                    
                     navigate('/');
                 }else{
                     setErrors({username: data.error || 'Login failed'});
@@ -89,7 +85,6 @@ const Login: React.FC = () => {
         }
     };
 
-    /* Navigate to sign up page */
     const handleNavigateToRegister = () => {
         navigate('/register');
     }

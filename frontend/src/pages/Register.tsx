@@ -1,21 +1,24 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, AtSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { useAuth } from '../services/authentication/AuthContext';
 import Navigation from '../components/navigation/Navigation';
 
-/* Interface for storing signup form data */
 interface RegisterFormData {
-    fullName: string;
+    firstName: string;
+    lastName: string;
+    username: string;
     email: string;
     password: string;
     confirmPassword: string;
     acceptTerms: boolean;
 }
 
-/* Interface for form validation errors */
 interface ValidationErrors {
-    fullName?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
@@ -23,22 +26,20 @@ interface ValidationErrors {
 }
 
 const Register: React.FC = () => {
-    /* Form state management for signup data */
+    const {isLoggedIn, setIsLoggedIn} = useAuth();
     const [formData, setFormData] = useState<RegisterFormData>({
-        fullName: '',
+        firstName: '',
+        lastName: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: '',
         acceptTerms: false
     });
 
-    /* Navigation hook for redirecting to login page */
     const navigate = useNavigate();
-
-    /* State for handling validation errors */
     const [errors, setErrors] = useState<ValidationErrors>({});
 
-    /* Handles input changes for the form fields */
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = event.target;
         setFormData(prev => ({
@@ -47,15 +48,30 @@ const Register: React.FC = () => {
         }));
     };
 
-    /* Validates the form data */
     const validateForm = (): ValidationErrors => {
         const newErrors: ValidationErrors = {};
 
-        /* Validate full name */
-        if (!formData.fullName.trim()) {
-            newErrors.fullName = 'Full name is required';
-        } else if (formData.fullName.length < 2) {
-            newErrors.fullName = 'Name is too short';
+        /* Validate first name */
+        if (!formData.firstName.trim()) {
+            newErrors.firstName = 'First name is required';
+        } else if (formData.firstName.length < 2) {
+            newErrors.firstName = 'First name is too short';
+        }
+
+        /* Validate last name */
+        if (!formData.lastName.trim()) {
+            newErrors.lastName = 'Last name is required';
+        } else if (formData.lastName.length < 2) {
+            newErrors.lastName = 'Last name is too short';
+        }
+
+        /* Validate username */
+        if (!formData.username.trim()) {
+            newErrors.username = 'Username is required';
+        } else if (formData.username.length < 3) {
+            newErrors.username = 'Username must be at least 3 characters';
+        } else if (!/^[a-zA-Z0-9_.]+$/.test(formData.username)) {
+            newErrors.username = 'Username can only contain letters, numbers, full stops and underscores';
         }
 
         /* Validate email */
@@ -89,7 +105,6 @@ const Register: React.FC = () => {
         return newErrors;
     };
 
-    /* Form submission handler with validation */
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -99,14 +114,38 @@ const Register: React.FC = () => {
         if (Object.keys(newErrors).length === 0) {
             try {
                 console.log('Attempting to create account with:', formData);
-                // Add your signup logic here
+                
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/users/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: formData.username,
+                        email: formData.email,
+                        password: formData.password,
+                        confirmation: formData.confirmPassword,
+                        first_name: formData.firstName,
+                        last_name: formData.lastName
+                    })
+                });
+
+                const data = await response.json();
+
+                if(response.ok){
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('refresh_token', data.refresh);
+
+                    setIsLoggedIn(true);
+
+                    navigate('/');
+                }
             } catch (error) {
                 console.error('Sign up failed:', error);
             }
         }
     };
 
-    /* Renders a form input field with consistent styling */
     const renderInput = (
         name: keyof RegisterFormData,
         label: string,
@@ -142,7 +181,6 @@ const Register: React.FC = () => {
         </div>
     );
 
-    /* Navigate to login page */
     const handleNavigateToLogin = () => {
         navigate('/login');
     }
@@ -162,12 +200,30 @@ const Register: React.FC = () => {
 
                     {/* Sign up form */}
                     <form onSubmit={handleSubmit} className='space-y-6'>
+                        <div className='grid grid-cols-2 gap-4'>
+                            {renderInput(
+                                'firstName',
+                                'First Name',
+                                'text',
+                                'First name',
+                                <User className='h-5 w-5 text-base-content/50' />
+                            )}
+
+                            {renderInput(
+                                'lastName',
+                                'Last Name',
+                                'text',
+                                'Last name',
+                                <User className='h-5 w-5 text-base-content/50' />
+                            )}
+                        </div>
+
                         {renderInput(
-                            'fullName',
-                            'Full Name',
+                            'username',
+                            'Username',
                             'text',
-                            'Enter your full name',
-                            <User className='h-5 w-5 text-base-content/50' />
+                            'Choose a username',
+                            <AtSign className='h-5 w-5 text-base-content/50' />
                         )}
 
                         {renderInput(
