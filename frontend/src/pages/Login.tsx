@@ -53,7 +53,6 @@ const Login: React.FC = () => {
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login/`, {
                     method: 'POST',
                     headers: {

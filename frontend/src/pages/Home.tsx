@@ -8,7 +8,7 @@ const LandingPage: React.FC = () => {
     const navigate = useNavigate();
 
     const handleGetStarted = () => {
-        navigate('/register');
+        navigate('/');
     };
 
     return (
@@ -27,7 +27,7 @@ const LandingPage: React.FC = () => {
                                 Kronathens
                             </h1>
                             <p className='text-3xl text-base-content mb-6'>
-                                Finally, a collaborative to-do app that gets out of your way.
+                                Finally, a completely free collaborative checklist app that gets out of your way.
                             </p>
                             <p className='text-xl text-base-content/60 mb-16 max-w-2xl mx-auto'>
                                 Other apps overwhelm you with features you don't need. 
@@ -93,7 +93,7 @@ const LandingPage: React.FC = () => {
                                 Ready to simplify?
                             </h2>
                             <p className='text-xl text-base-content/60 mb-12'>
-                                Join thousands who've rediscovered the joy of simple productivity.
+                                Join people who've rediscovered the joy of simple productivity.
                             </p>
                             
                             <button 
