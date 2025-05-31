@@ -6,17 +6,17 @@ import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 interface SidebarProps {
     groups: GroupInformation[],
     onAddGroup: (name: string, description: string) => void,
-    onGroupSelect: (groupdId: string) => void
+    onGroupSelect: (groupId: number) => void
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) => {
-    const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+    const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
 
     /* Set to the first group on mount */
     useEffect(() => {
         const FIRST = 0;
         if (groups.length > 0) {
-            setSelectedGroupId(groups[FIRST].id || '');
+            setSelectedGroupId(groups[FIRST].id || 0);
         }
     }, [])
 
@@ -67,9 +67,10 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
     /* Selecting the group and passing information back to the parent based on changes in the list */
     useEffect(() => {
         if (groups.length > 0) {
-            const lastGroup = groups[groups.length - 1];
-            setSelectedGroupId(lastGroup.id || '');
-            onGroupSelect(lastGroup.id || '');
+            const FIRST = 0;
+            const lastGroup = groups[FIRST];
+            setSelectedGroupId(lastGroup.id || 0);
+            onGroupSelect(lastGroup.id || 0);
         }
         /* The dependency was just `groups` now changed to `groups.length` so it doesn't jump. */
     }, [groups.length]);
@@ -118,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect }) 
                                     }`}
                             >
                                 <button
-                                    onClick={() => { setSelectedGroupId(group.id || ''); onGroupSelect(group.id || ''); }}
+                                    onClick={() => { setSelectedGroupId(group.id || 0); onGroupSelect(group.id || 0); }}
                                     className='flex-1 flex items-center gap-2 min-w-0'
                                 >
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0

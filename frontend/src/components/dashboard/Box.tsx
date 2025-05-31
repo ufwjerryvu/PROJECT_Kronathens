@@ -11,9 +11,11 @@ import Workspace from '../workspace/Workspace';
 import { GroupInformation } from '../../interfaces/dashboard/GroupInformation';
 import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 import { Task } from '../../interfaces/workspace/Task';
+import { useAuth } from '../../services/authentication/AuthContext';
 
 
 const Box: React.FC = () => {
+    const { isLoggedIn } = useAuth();
     type ViewType = 'card' | 'list';
 
     /* Set box view type either as card or list for now, might add more later. Who knows? */
@@ -30,13 +32,44 @@ const Box: React.FC = () => {
     const [selectedCard, setSelectedCard] = useState<CardInformation | null>(null);
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
-    /* On mount, pick the first group */
     useEffect(() => {
-        const FIRST = 0;
-        if (groups.length > 0) {
-            setCurrentGroup(groups[FIRST]);
+        const fetchAllGroups = async () => {
+            if (isLoggedIn) {
+                try {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        const mappedGroups: GroupInformation[] = data.map((group: any) => ({
+                            id: group.id,
+                            name: group.name,
+                            description: group.description,
+                            cards: []
+                        }))
+
+                        setGroups(mappedGroups);
+                    }
+                } catch (error) {
+                    console.error("Cannot load groups/collections.")
+                }
+            }
         }
-    }, [])
+
+        fetchAllGroups();
+    }, [isLoggedIn])
+
+    useEffect(() => {
+        if (groups.length > 0) {
+            setCurrentGroup(groups[0]);
+        }
+    }, [groups]);
 
     /* Edit the card */
     const handleChecklistItemEdit = (id: string) => {
@@ -111,20 +144,55 @@ const Box: React.FC = () => {
     };
 
     /* Add a new group to the existing list */
-    const handleConfirmGroupCreation = (name: string, description: string) => {
-        const newGroup: GroupInformation = {
-            id: Date.now().toString(),
-            name: name,
-            description: description,
-            cards: []
-        };
+    const handleConfirmGroupCreation = async (name: string, description: string) => {
+        /* Sign in required */
+        if (isLoggedIn) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/create/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        description: description
+                    })
+                });
 
-        setGroups(prevGroups => [...prevGroups, newGroup]);
+                if (response.ok) {
+                    const data = await response.json()
+                    const newGroup: GroupInformation = {
+                        id: data.id,
+                        name: name,
+                        description: description,
+                        cards: []
+                    };
+
+                    setGroups(prevGroups => [...prevGroups, newGroup]);
+                }
+            } catch (error) {
+                console.error('Unable to create group')
+            }
+        } else {
+            /* No sign in required */
+            const newGroup: GroupInformation = {
+                id: Date.now(),
+                name: name,
+                description: description,
+                cards: []
+            };
+
+            setGroups(prevGroups => [...prevGroups, newGroup]);
+        }
+
     }
 
     /* Selecting the group and setting the state */
-    const handleGroupSelection = (id: string) => {
+    const handleGroupSelection = (id: number) => {
+        console.log('Group selection called with id:', id);
         const selectedGroup = groups.find(group => group.id === id);
+        console.log('Selected group:', selectedGroup);
         setCurrentGroup(selectedGroup);
     }
 

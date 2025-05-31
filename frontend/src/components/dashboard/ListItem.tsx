@@ -8,7 +8,7 @@ interface ListItemProps {
     completionPercentage: number;
     taskCount: number;
 
-    onCardClick: (id: string) => void;  // New handler for item click
+    onCardClick: (id: string) => void;
     onEdit: (id: string) => void;
     onDelete: (id: string) => void;
     onAddCollaborator: (id: string) => void;
