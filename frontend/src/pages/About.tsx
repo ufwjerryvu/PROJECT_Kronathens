@@ -63,7 +63,7 @@ const About: React.FC = () => {
                         {/* Creator section */}
                         <div className='text-center'>
                             <div className='text-base-content/40 text-sm'>
-                                Made by Jerry Vu
+                                Made by Jerry Vu using React and Django.
                             </div>
                         </div>
                     </div>
