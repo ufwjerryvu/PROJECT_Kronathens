@@ -3,7 +3,6 @@ import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../services/authentication/AuthContext';
-import Navigation from '../components/navigation/Navigation';
 
 interface LoginCredentials {
     username: string;
@@ -88,7 +87,6 @@ const Login: React.FC = () => {
 
     return (
         <>
-            <Navigation />
             <div className='container mx-auto pt-12 pb-12 px-4'>
                 <div className='max-w-md mx-auto rounded-3xl bg-base-200 p-8'>
                     {/* Header section */}

@@ -13,7 +13,6 @@ import { CardInformation } from '../../interfaces/dashboard/CardInformation';
 import { Task } from '../../interfaces/workspace/Task';
 import { useAuth } from '../../services/authentication/AuthContext';
 
-
 const Box: React.FC = () => {
     const { isLoggedIn } = useAuth();
     type ViewType = 'card' | 'list';
@@ -31,6 +30,7 @@ const Box: React.FC = () => {
     /* Selected card for the workspace. The current card being opened. */
     const [selectedCard, setSelectedCard] = useState<CardInformation | null>(null);
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         const fetchAllGroups = async () => {
@@ -194,13 +194,14 @@ const Box: React.FC = () => {
         const selectedGroup = groups.find(group => group.id === id);
         console.log('Selected group:', selectedGroup);
         setCurrentGroup(selectedGroup);
+        setIsSidebarOpen(false);
     }
 
     /* Render based on the view type variable */
     const renderChecklists = () => {
         if (viewType === 'list') {
             return (
-                <div className='space-y-2 p-2 pt-4 overflow-auto'>
+                <div className='space-y-2 p-2 sm:p-4 pt-4 overflow-auto'>
                     {currentGroup?.cards?.map((item, index) => (
                         <ListItem
                             key={index}
@@ -222,7 +223,7 @@ const Box: React.FC = () => {
 
         /* This one is card type selected */
         return (
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 p-2 sm:p-4 overflow-auto'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 p-2 sm:p-4 overflow-auto'>
                 {currentGroup?.cards?.map((card, index) => (
                     <Card
                         key={index}
@@ -312,7 +313,7 @@ const Box: React.FC = () => {
     };
 
     return (
-        <div className='container mx-auto pt-12 pb-12 px-4'>
+        <div className='container mx-auto min-h-screen px-2 sm:px-4 pt-4 sm:pt-12 pb-4 sm:pb-12'>
             <style>{`
         .auto-hide-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -344,16 +345,36 @@ const Box: React.FC = () => {
           scrollbar-color: hsl(var(--bc) / 0.2) transparent;
         }
       `}</style>
-            <div className='flex h-[calc(100vh-6rem)] rounded-3xl bg-base-200'>
-                <div className='flex-[0.25] min-w-[200px] bg-base-300 p-4 rounded-l-3xl overflow-hidden'>
-                    <Sidebar groups={groups} onAddGroup={handleConfirmGroupCreation} onGroupSelect={handleGroupSelection} />
+            
+            <div className='flex flex-col md:flex-row h-[calc(100vh-2rem)] sm:h-[calc(100vh-6rem)] rounded-2xl sm:rounded-3xl bg-base-200 overflow-hidden'>
+                
+                {/* Mobile sidebar overlay */}
+                <div className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+                     onClick={() => setIsSidebarOpen(false)} />
+                
+                {/* Sidebar */}
+                <div className={`
+                    fixed md:relative top-16 md:top-auto bottom-0 md:bottom-auto left-0 z-40 md:z-auto
+                    w-full md:w-auto md:flex-[0_0_280px] lg:flex-[0_0_320px]
+                    bg-base-300 transform transition-transform duration-300 md:transform-none
+                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                    md:rounded-l-3xl overflow-hidden
+                `}>
+                    <div className='h-full p-3 sm:p-4'>
+                        <Sidebar 
+                            groups={groups} 
+                            onAddGroup={handleConfirmGroupCreation} 
+                            onGroupSelect={handleGroupSelection}
+                            onClose={() => setIsSidebarOpen(false)}
+                        />
+                    </div>
                 </div>
 
-                {/* Added relative positioning */}
-                <div className='flex-[0.75] bg-base-200 p-4 rounded-xl overflow-hidden flex flex-col relative'>
+                {/* Main content area */}
+                <div className='flex-1 bg-base-200 overflow-hidden flex flex-col relative'>
                     {groups.length > 0 ? (
                         <>
-                            <div className='w-full bg-base-200 pb-3'>
+                            <div className='w-full bg-base-200 p-3 sm:p-4 border-b border-base-300 md:border-none'>
                                 <Header
                                     name={currentGroup?.name || ''}
                                     viewType={viewType}
@@ -361,9 +382,11 @@ const Box: React.FC = () => {
                                     onSortSelection={handleSort}
                                 />
                             </div>
+                            
                             <div className='flex-1 overflow-auto auto-hide-scrollbar'>
                                 {renderChecklists()}
                             </div>
+                            
                             <Workspace
                                 isOpen={isWorkspaceOpen}
                                 onClose={handleWorkspaceClose}
@@ -372,18 +395,41 @@ const Box: React.FC = () => {
                             />
                         </>
                     ) : (
-                        <div className='flex flex-cols h-full items-center justify-center'>
+                        <div className='flex flex-col h-full items-center justify-center p-4'>
                             <EmptyState />
                         </div>
                     )}
                 </div>
 
+                {/* Mobile hamburger button - bottom left */}
+                {!isSidebarOpen && (
+                    <button 
+                        className='fixed bottom-6 left-6 md:hidden w-12 h-12 rounded-full bg-base-300 text-base-content/70 hover:bg-base-300/80 active:bg-base-300/60 transition-colors shadow-lg z-30 flex items-center justify-center'
+                        onClick={() => setIsSidebarOpen(true)}
+                    >
+                        <i className='bi bi-list text-xl' />
+                    </button>
+                )}
+
+                {/* Create checklist FAB for mobile - only show when group is selected */}
+                {currentGroup && (
+                    <button
+                        className='fixed bottom-6 right-6 md:hidden w-14 h-14 bg-secondary text-secondary-content rounded-full shadow-lg flex items-center justify-center z-30 active:scale-95 transition-transform'
+                        onClick={() => {
+                            const dialog = document.getElementById('create_checklist_form') as HTMLDialogElement;
+                            dialog?.showModal();
+                        }}
+                    >
+                        <i className='bi bi-plus-lg text-xl' />
+                    </button>
+                )}
+
                 {/* Modal to create a checklist card. */}
                 <div className='relative'>
                     <dialog id='create_checklist_form' className='modal'>
-                        <div className='modal-box max-w-sm md:max-w-md'>
+                        <div className='modal-box w-11/12 max-w-sm sm:max-w-md mx-4'>
                             <form method='dialog'>
-                                <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
+                                <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2 w-8 h-8 min-h-8'>✕</button>
                             </form>
                             <h3 className='font-bold text-lg mb-6 text-center'>Create a new checklist</h3>
                             <div className='space-y-4 mb-8'>
@@ -393,7 +439,7 @@ const Box: React.FC = () => {
                                         type='text'
                                         placeholder='Enter your checklist name'
                                         className='input input-bordered w-full rounded-full bg-base-200 border-base-300 
-                                                focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20'
+                                                focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20 h-12'
                                         value={title}
                                         onChange={handleTitleChange}
                                     />
@@ -413,16 +459,16 @@ const Box: React.FC = () => {
                                     </p>
                                 </div>
                             </div>
-                            <div className='flex justify-between gap-4'>
-                                <form method='dialog'>
-                                    <button className='px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                            <div className='flex flex-col sm:flex-row justify-between gap-3 sm:gap-4'>
+                                <form method='dialog' className='order-2 sm:order-1'>
+                                    <button className='w-full sm:w-auto h-12 px-6 sm:px-8 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
                                         transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60'>
                                         Cancel
                                     </button>
                                 </form>
-                                <form method='dialog'>
+                                <form method='dialog' className='order-1 sm:order-2'>
                                     <button
-                                        className='px-4 py-2 bg-secondary text-sm font-medium text-secondary-content rounded-full
+                                        className='w-full sm:w-auto h-12 px-6 sm:px-8 bg-secondary text-sm font-medium text-secondary-content rounded-full
                                             transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60'
                                         onClick={() => {
                                             handleAddChecklist(title, description);
@@ -441,7 +487,6 @@ const Box: React.FC = () => {
                         </form>
                     </dialog>
                 </div>
-
             </div>
         </div>
     );
