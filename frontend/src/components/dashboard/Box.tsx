@@ -461,14 +461,14 @@ const Box: React.FC = () => {
                             </div>
                             <div className='flex flex-col sm:flex-row justify-between gap-3 sm:gap-4'>
                                 <form method='dialog' className='order-2 sm:order-1'>
-                                    <button className='w-full sm:w-auto h-12 px-6 sm:px-8 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                                    <button className='py-2 px-4 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
                                         transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60'>
                                         Cancel
                                     </button>
                                 </form>
                                 <form method='dialog' className='order-1 sm:order-2'>
                                     <button
-                                        className='w-full sm:w-auto h-12 px-6 sm:px-8 bg-secondary text-sm font-medium text-secondary-content rounded-full
+                                        className='py-2 px-4 bg-secondary text-sm font-medium text-secondary-content rounded-full
                                             transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60'
                                         onClick={() => {
                                             handleAddChecklist(title, description);

@@ -142,14 +142,14 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect, on
                                     </span>
                                 </button>
                                 <div className='flex items-center gap-1'>
-                                    <button 
-                                        className='w-8 h-8 rounded-full flex items-center justify-center hover:bg-base-200/50 transition-colors' 
+                                    <button
+                                        className='w-8 h-8 rounded-full flex items-center justify-center hover:bg-base-200/50 transition-colors'
                                         onClick={() => console.log(`Edit button clicked for group: ${group.name}`)}
                                     >
                                         <i className='bi bi-pencil text-base text-base-content/50 hover:text-blue-300 active:text-blue-400 transition-colors duration-200' />
                                     </button>
-                                    <button 
-                                        className='w-8 h-8 rounded-full flex items-center justify-center hover:bg-base-200/50 transition-colors' 
+                                    <button
+                                        className='w-8 h-8 rounded-full flex items-center justify-center hover:bg-base-200/50 transition-colors'
                                         onClick={() => console.log(`Delete button clicked for group: ${group.name}`)}
                                     >
                                         <i className='bi bi-trash text-base text-base-content/50 hover:text-red-600 active:text-red-700 transition-colors duration-200' />
@@ -162,10 +162,11 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect, on
             </div>
 
             {/* Create Group Modal */}
+            {/* Create Group Modal */}
             <dialog id='create_group_form' className='modal'>
-                <div className='modal-box w-11/12 max-w-sm sm:max-w-md mx-4'>
+                <div className='modal-box max-w-sm md:max-w-md'>
                     <form method='dialog'>
-                        <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2 w-8 h-8 min-h-8'>✕</button>
+                        <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
                     </form>
                     <h3 className='font-bold text-lg mb-6 text-center'>Create a new group</h3>
                     <div className='space-y-4 mb-8'>
@@ -175,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect, on
                                 type='text'
                                 placeholder='Enter your group name'
                                 className='input input-bordered w-full rounded-full bg-base-200 border-base-300 
-                                    focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20 h-12'
+                                    focus:border-secondary/30 focus:ring-2 focus:ring-secondary/20'
                                 onChange={handleNameChange}
                                 value={name}
                             />
@@ -194,10 +195,16 @@ const Sidebar: React.FC<SidebarProps> = ({ groups, onAddGroup, onGroupSelect, on
                             </p>
                         </div>
                     </div>
-                    <div className='flex flex-col sm:flex-row justify-between gap-3 sm:gap-4'>
-                        <form method='dialog' className='order-1 sm:order-2'>
+                    <div className='flex justify-between gap-4'>
+                        <form method='dialog'>
+                            <button className='px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                                     transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60'>
+                                Cancel
+                            </button>
+                        </form>
+                        <form method='dialog'>
                             <button
-                                className='w-full sm:w-auto h-12 px-6 sm:px-8 bg-secondary text-sm font-medium text-secondary-content rounded-full
+                                className='px-4 py-2 bg-secondary text-sm font-medium text-secondary-content rounded-full
                                         transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60 disabled:opacity-50'
                                 onClick={() => {
                                     onAddGroup(name, description);
