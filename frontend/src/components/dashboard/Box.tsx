@@ -65,12 +65,6 @@ const Box: React.FC = () => {
         fetchAllGroups();
     }, [isLoggedIn])
 
-    useEffect(() => {
-        if (groups.length > 0) {
-            setCurrentGroup(groups[0]);
-        }
-    }, [groups]);
-
     /* Edit the card */
     const handleChecklistItemEdit = (id: string) => {
         if (currentGroup?.cards) {
@@ -190,11 +184,39 @@ const Box: React.FC = () => {
 
     /* Selecting the group and setting the state */
     const handleGroupSelection = (id: number) => {
-        console.log('Group selection called with id:', id);
         const selectedGroup = groups.find(group => group.id === id);
-        console.log('Selected group:', selectedGroup);
         setCurrentGroup(selectedGroup);
         setIsSidebarOpen(false);
+    }
+
+    const handleGroupEditing = (id: number) => {
+
+    }
+    
+    /* Deletes a group but divides into two modes logged in and not */
+    const handleGroupDeletion = async (id: number) => {
+        console.log('Group confirmed to delete: ', id);
+
+        if (isLoggedIn) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ` + localStorage.getItem('access_token')
+                    }
+                });
+
+                if (!response.ok) {
+                    return;
+                }
+
+            } catch (error) {
+                console.error('Unable to delete group');
+            }
+        }
+
+        setGroups(groups.filter(group => group.id !== id));
     }
 
     /* Render based on the view type variable */
@@ -345,13 +367,13 @@ const Box: React.FC = () => {
           scrollbar-color: hsl(var(--bc) / 0.2) transparent;
         }
       `}</style>
-            
+
             <div className='flex flex-col md:flex-row h-[calc(100vh-2rem)] sm:h-[calc(100vh-6rem)] rounded-2xl sm:rounded-3xl bg-base-200 overflow-hidden'>
-                
+
                 {/* Mobile sidebar overlay */}
-                <div className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
-                     onClick={() => setIsSidebarOpen(false)} />
-                
+                <div className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    onClick={() => setIsSidebarOpen(false)} />
+
                 {/* Sidebar */}
                 <div className={`
                     fixed md:relative top-16 md:top-auto bottom-0 md:bottom-auto left-0 z-40 md:z-auto
@@ -361,10 +383,12 @@ const Box: React.FC = () => {
                     md:rounded-l-3xl overflow-hidden
                 `}>
                     <div className='h-full p-3 sm:p-4'>
-                        <Sidebar 
-                            groups={groups} 
-                            onAddGroup={handleConfirmGroupCreation} 
+                        <Sidebar
+                            groups={groups}
+                            onAddGroup={handleConfirmGroupCreation}
                             onGroupSelect={handleGroupSelection}
+                            onDeleteGroup={handleGroupDeletion}
+                            onEditGroup={handleGroupEditing}
                             onClose={() => setIsSidebarOpen(false)}
                         />
                     </div>
@@ -382,11 +406,11 @@ const Box: React.FC = () => {
                                     onSortSelection={handleSort}
                                 />
                             </div>
-                            
+
                             <div className='flex-1 overflow-auto auto-hide-scrollbar'>
                                 {renderChecklists()}
                             </div>
-                            
+
                             <Workspace
                                 isOpen={isWorkspaceOpen}
                                 onClose={handleWorkspaceClose}
@@ -403,7 +427,7 @@ const Box: React.FC = () => {
 
                 {/* Mobile hamburger button - bottom left */}
                 {!isSidebarOpen && (
-                    <button 
+                    <button
                         className='fixed bottom-6 left-6 md:hidden w-12 h-12 rounded-full bg-base-300 text-base-content/70 hover:bg-base-300/80 active:bg-base-300/60 transition-colors shadow-lg z-30 flex items-center justify-center'
                         onClick={() => setIsSidebarOpen(true)}
                     >

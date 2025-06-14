@@ -112,8 +112,6 @@ const Register: React.FC = () => {
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                console.log('Attempting to create account with:', formData);
-                
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/users/register/`, {
                     method: 'POST',
                     headers: {
