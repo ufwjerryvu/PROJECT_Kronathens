@@ -10,12 +10,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
 import Home from './pages/Home';
+import Navigation from './components/navigation/Navigation';
 
 function App() {
   const { isLoggedIn } = useAuth();
   return (
     <>
       <BrowserRouter>
+        <Navigation />
         <Routes>
           <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />

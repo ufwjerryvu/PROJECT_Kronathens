@@ -1,9 +1,9 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { Mail, Lock, User, AlertCircle, AtSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import { useAuth } from '../services/authentication/AuthContext';
-import Navigation from '../components/navigation/Navigation';
 
 interface RegisterFormData {
     firstName: string;
@@ -26,7 +26,7 @@ interface ValidationErrors {
 }
 
 const Register: React.FC = () => {
-    const {isLoggedIn, setIsLoggedIn} = useAuth();
+    const { isLoggedIn, setIsLoggedIn } = useAuth();
     const [formData, setFormData] = useState<RegisterFormData>({
         firstName: '',
         lastName: '',
@@ -113,33 +113,24 @@ const Register: React.FC = () => {
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                console.log('Attempting to create account with:', formData);
-                
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/users/register/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        username: formData.username,
-                        email: formData.email,
-                        password: formData.password,
-                        confirmation: formData.confirmPassword,
-                        first_name: formData.firstName,
-                        last_name: formData.lastName
-                    })
+                /* POST method */
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/register/`, {
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    confirmation: formData.confirmPassword,
+                    first_name: formData.firstName,
+                    last_name: formData.lastName
                 });
 
-                const data = await response.json();
+                const data = response.data;
 
-                if(response.ok){
-                    localStorage.setItem('access_token', data.access);
-                    localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
 
-                    setIsLoggedIn(true);
+                setIsLoggedIn(true);
 
-                    navigate('/');
-                }
+                navigate('/');
             } catch (error) {
                 console.error('Sign up failed:', error);
             }
@@ -187,7 +178,6 @@ const Register: React.FC = () => {
 
     return (
         <>
-            <Navigation />
             <div className='container mx-auto pt-12 pb-12 px-4'>
                 <div className='max-w-md mx-auto rounded-3xl bg-base-200 p-8'>
                     {/* Header section */}
