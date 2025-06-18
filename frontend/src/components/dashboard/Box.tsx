@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
+import axios from 'axios';
 
 import Header from './Header';
 import Card from './CardItem';
@@ -36,26 +37,23 @@ const Box: React.FC = () => {
         const fetchAllGroups = async () => {
             if (isLoggedIn) {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`, {
-                        method: 'GET',
+                    /* GET method */
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`, {
                         headers: {
-                            'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + localStorage.getItem('access_token')
                         }
                     });
 
-                    const data = await response.json();
+                    const data = response.data;
 
-                    if (response.ok) {
-                        const mappedGroups: GroupInformation[] = data.map((group: any) => ({
-                            id: group.id,
-                            name: group.name,
-                            description: group.description,
-                            cards: []
-                        }))
+                    const mappedGroups: GroupInformation[] = data.map((group: any) => ({
+                        id: group.id,
+                        name: group.name,
+                        description: group.description,
+                        cards: []
+                    }))
 
-                        setGroups(mappedGroups);
-                    }
+                    setGroups(mappedGroups);
                 } catch (error) {
                     console.error("Cannot load groups/collections.")
                 }
@@ -142,29 +140,26 @@ const Box: React.FC = () => {
         /* Sign in required */
         if (isLoggedIn) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/create/`, {
-                    method: 'POST',
+                /* POST method */
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/collaboration/groups/create/`, {
+                    name: name,
+                    description: description
+                }, {
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        description: description
-                    })
+                    }
                 });
 
-                if (response.ok) {
-                    const data = await response.json()
-                    const newGroup: GroupInformation = {
-                        id: data.id,
-                        name: name,
-                        description: description,
-                        cards: []
-                    };
+                const data = response.data;
 
-                    setGroups(prevGroups => [...prevGroups, newGroup]);
-                }
+                const newGroup: GroupInformation = {
+                    id: data.id,
+                    name: name,
+                    description: description,
+                    cards: []
+                };
+
+                setGroups(prevGroups => [...prevGroups, newGroup]);
             } catch (error) {
                 console.error('Unable to create group')
             }
@@ -192,24 +187,19 @@ const Box: React.FC = () => {
     const handleGroupEditing = (id: number) => {
 
     }
-    
+
     /* Deletes a group but divides into two modes logged in and not */
     const handleGroupDeletion = async (id: number) => {
         console.log('Group confirmed to delete: ', id);
 
         if (isLoggedIn) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`, {
-                    method: 'DELETE',
+                /* DELETE method */
+                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`, {
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ` + localStorage.getItem('access_token')
                     }
                 });
-
-                if (!response.ok) {
-                    return;
-                }
 
             } catch (error) {
                 console.error('Unable to delete group');

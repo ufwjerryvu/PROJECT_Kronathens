@@ -3,6 +3,7 @@ import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../services/authentication/AuthContext';
+import axios from 'axios';
 
 interface LoginCredentials {
     username: string;
@@ -16,7 +17,7 @@ interface ValidationErrors {
 }
 
 const Login: React.FC = () => {
-    const {isLoggedIn, setIsLoggedIn} = useAuth();
+    const { isLoggedIn, setIsLoggedIn } = useAuth();
     const [credentials, setCredentials] = useState<LoginCredentials>({
         username: '',
         password: '',
@@ -52,29 +53,20 @@ const Login: React.FC = () => {
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/users/login/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }, 
-                    body: JSON.stringify({
-                        username: credentials.username,
-                        password: credentials.password
-                    })
-                })
+                /* POST method */
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/login/`, {
+                    username: credentials.username,
+                    password: credentials.password
+                });
 
-                const data = await response.json();
+                const data = response.data;
 
-                if(response.ok){
-                    localStorage.setItem('access_token', data.access);
-                    localStorage.setItem('refresh_token', data.refresh);
-                    
-                    setIsLoggedIn(true);
-                    
-                    navigate('/');
-                }else{
-                    setErrors({username: data.error || 'Login failed'});
-                }
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+
+                setIsLoggedIn(true);
+
+                navigate('/');
             } catch (error) {
                 console.error('Sign in failed:', error);
             }
