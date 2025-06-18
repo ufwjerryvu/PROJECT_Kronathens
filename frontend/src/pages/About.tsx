@@ -1,12 +1,9 @@
 import React from 'react';
 import { CheckCircle, Zap, Target } from 'lucide-react';
 
-import Navigation from '../components/navigation/Navigation';
-
 const About: React.FC = () => {
     return (
         <>
-            <Navigation />
             <div className='min-h-screen bg-base-200'>
                 <div className='container mx-auto px-4 py-16'>
                     <div className='max-w-3xl mx-auto'>
@@ -63,7 +60,7 @@ const About: React.FC = () => {
                         {/* Creator section */}
                         <div className='text-center'>
                             <div className='text-base-content/40 text-sm'>
-                                Made by Jerry Vu using React and Django.
+                                Made by Jerry Vu with love using React and Django. Deployed on AWS EC2.
                             </div>
                         </div>
                     </div>

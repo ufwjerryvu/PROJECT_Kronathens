@@ -48,27 +48,56 @@ const Navigation: React.FC = () => {
         }
     }
 
+    const handleNavigation = (path: string) => {
+        setTimeout(() => {
+            navigate(path);
+            setIsMobileMenuOpen(false);
+        }, 0);
+    }
+
     return (
         <>
             <header className='sticky top-0 z-50 w-full bg-base-100 shadow-sm'>
                 <div className='container mx-auto px-4'>
                     <div className='navbar bg-base-100 py-2 sm:py-4'>
                         <div className='navbar-start'>
-                            <div className='dropdown lg:hidden'>
-                                <div 
-                                    tabIndex={0} 
-                                    role='button' 
+                            <div className='relative lg:hidden'>
+                                <button 
                                     className='btn btn-primary btn-circle mr-2 w-10 h-10 min-h-10'
                                     onClick={toggleMobileMenu}
                                 >
                                     <Menu className='w-6 h-6' />
-                                </div>
+                                </button>
                                 {isMobileMenuOpen && (
-                                    <ul className='menu menu-sm dropdown-content mt-1 p-2 shadow bg-base-200 rounded-box z-[1] w-52'>
-                                        <li><a href='/home' onClick={() => setIsMobileMenuOpen(false)}>Home</a></li>
-                                        <li><a href='/' onClick={() => setIsMobileMenuOpen(false)}>Dashboard</a></li>
-                                        <li><a href='/about' onClick={() => setIsMobileMenuOpen(false)}>About</a></li>
-                                    </ul>
+                                    <>
+                                        <div 
+                                            className='fixed inset-0 z-10' 
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        ></div>
+                                        <div className='absolute left-0 top-full mt-1 w-52 bg-base-200 shadow-lg rounded-box z-20 p-2'>
+                                            <a 
+                                                href="/home" 
+                                                className='block px-4 py-2 hover:bg-base-300 rounded transition-colors text-sm'
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                            >
+                                                Home
+                                            </a>
+                                            <a 
+                                                href="/" 
+                                                className='block px-4 py-2 hover:bg-base-300 rounded transition-colors text-sm'
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                            >
+                                                Dashboard
+                                            </a>
+                                            <a 
+                                                href="/about" 
+                                                className='block px-4 py-2 hover:bg-base-300 rounded transition-colors text-sm'
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                            >
+                                                About
+                                            </a>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                             
@@ -76,31 +105,55 @@ const Navigation: React.FC = () => {
                                 @import url('https://fonts.googleapis.com/css2?family=Gloock&display=swap');
                             </style>
 
-                            <a 
-                                href='.' 
-                                className='text-xl sm:text-2xl lg:text-3xl font-semibold truncate max-w-[150px] sm:max-w-none' 
+                            <button 
+                                onClick={() => navigate('/')}
+                                className='text-xl sm:text-2xl lg:text-3xl font-semibold truncate max-w-[150px] sm:max-w-none bg-transparent border-none p-0' 
                                 style={{ fontFamily: 'Gloock, serif' }}
                             >
                                 Kronathens
-                            </a>
+                            </button>
                         </div>
                         
                         <div className='navbar-center hidden lg:flex'>
                             <ul className='menu menu-horizontal px-1 font-medium space-x-1'>
                                 <li>
-                                    <a className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' href='/home'>
+                                    <button 
+                                        type="button"
+                                        className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            navigate('/home');
+                                        }}
+                                    >
                                         Home
-                                    </a>
+                                    </button>
                                 </li>
                                 <li>
-                                    <a className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' href='/'>
+                                    <button 
+                                        type="button"
+                                        className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            navigate('/');
+                                        }}
+                                    >
                                         Dashboard
-                                    </a>
+                                    </button>
                                 </li>
                                 <li>
-                                    <a className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' href='/about'>
+                                    <button 
+                                        type="button"
+                                        className='rounded-full hover:bg-base-200 active:!bg-primary focus:!bg-base-200 px-4 py-2 transition-colors' 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            navigate('/about');
+                                        }}
+                                    >
                                         About
-                                    </a>
+                                    </button>
                                 </li>
                             </ul>
                         </div>
