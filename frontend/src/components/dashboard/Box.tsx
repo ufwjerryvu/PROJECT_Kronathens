@@ -35,32 +35,30 @@ const Box: React.FC = () => {
 
     useEffect(() => {
         const fetchAllGroups = async () => {
-            if (isLoggedIn) {
-                try {
-                    /* GET method */
-                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                        }
-                    });
+            await new Promise(resolve => setTimeout(resolve, 0));
+            
+            try {
+                /* GET method */
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`);
 
-                    const data = response.data;
+                const data = response.data;
 
-                    const mappedGroups: GroupInformation[] = data.map((group: any) => ({
-                        id: group.id,
-                        name: group.name,
-                        description: group.description,
-                        cards: []
-                    }))
+                const mappedGroups: GroupInformation[] = data.map((group: any) => ({
+                    id: group.id,
+                    name: group.name,
+                    description: group.description,
+                    cards: []
+                }))
 
-                    setGroups(mappedGroups);
-                } catch (error) {
-                    console.error("Cannot load groups/collections.")
-                }
+                setGroups(mappedGroups);
+            } catch (error) {
+                console.error("Cannot load groups/collections.")
             }
         }
 
-        fetchAllGroups();
+        if (isLoggedIn) {
+            fetchAllGroups();
+        }
     }, [isLoggedIn])
 
     /* Edit the card */
@@ -144,10 +142,6 @@ const Box: React.FC = () => {
                 const response = await axios.post(`${process.env.REACT_APP_API_URL}/collaboration/groups/create/`, {
                     name: name,
                     description: description
-                }, {
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-                    }
                 });
 
                 const data = response.data;
@@ -195,11 +189,7 @@ const Box: React.FC = () => {
         if (isLoggedIn) {
             try {
                 /* DELETE method */
-                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`, {
-                    headers: {
-                        'Authorization': `Bearer ` + localStorage.getItem('access_token')
-                    }
-                });
+                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`);
 
             } catch (error) {
                 console.error('Unable to delete group');
