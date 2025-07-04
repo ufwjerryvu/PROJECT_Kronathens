@@ -66,7 +66,9 @@ const Login: React.FC = () => {
 
                 setIsLoggedIn(true);
 
-                navigate('/');
+                setTimeout(() => {
+                    navigate('/');
+                }, 0);
             } catch (error) {
                 console.error('Sign in failed:', error);
             }

@@ -32,35 +32,36 @@ const Box: React.FC = () => {
     const [selectedCard, setSelectedCard] = useState<CardInformation | null>(null);
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    
+    /* Card to delete confirmation */
+    const [cardToDeleteId, setCardToDeleteId] = useState<string>('');
 
     useEffect(() => {
         const fetchAllGroups = async () => {
-            if (isLoggedIn) {
-                try {
-                    /* GET method */
-                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`, {
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                        }
-                    });
+            await new Promise(resolve => setTimeout(resolve, 0));
 
-                    const data = response.data;
+            try {
+                /* GET method */
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/collaboration/groups/all/`);
 
-                    const mappedGroups: GroupInformation[] = data.map((group: any) => ({
-                        id: group.id,
-                        name: group.name,
-                        description: group.description,
-                        cards: []
-                    }))
+                const data = response.data;
 
-                    setGroups(mappedGroups);
-                } catch (error) {
-                    console.error("Cannot load groups/collections.")
-                }
+                const mappedGroups: GroupInformation[] = data.map((group: any) => ({
+                    id: group.id,
+                    name: group.name,
+                    description: group.description,
+                    cards: []
+                }))
+
+                setGroups(mappedGroups);
+            } catch (error) {
+                console.error("Cannot load groups/collections.")
             }
         }
 
-        fetchAllGroups();
+        if (isLoggedIn) {
+            fetchAllGroups();
+        }
     }, [isLoggedIn])
 
     /* Edit the card */
@@ -95,7 +96,41 @@ const Box: React.FC = () => {
 
     /* Delete the card */
     const handleDelete = (id: string) => {
-        console.log('Delete card:', id);
+        setCardToDeleteId(id);
+        const modal = document.getElementById('delete_card_confirmation_form') as HTMLDialogElement;
+        modal?.showModal();
+    };
+
+    /* Confirm deletion */
+    const handleConfirmDelete = async () => {
+        if (!currentGroup?.cards || !cardToDeleteId) return;
+        
+        const cardIndex = parseInt(cardToDeleteId);
+        const card = currentGroup.cards[cardIndex];
+        
+        if (!card) return;
+        
+        if (isLoggedIn) {
+            try {
+                await axios.delete(`${process.env.REACT_APP_API_URL}/checklists/workspace/delete/${card.id}/`);
+            } catch (error) {
+                console.error('Unable to delete card');
+                return;
+            }
+        }
+        
+        // Remove card from current group
+        const updatedCards = currentGroup.cards.filter((_, index) => index !== cardIndex);
+        const updatedGroup = { ...currentGroup, cards: updatedCards };
+        
+        setCurrentGroup(updatedGroup);
+        setGroups(prevGroups =>
+            prevGroups.map(group =>
+                group.id === currentGroup.id ? updatedGroup : group
+            )
+        );
+        
+        setCardToDeleteId('');
     };
 
     /* Add a collaborator to the space */
@@ -144,10 +179,6 @@ const Box: React.FC = () => {
                 const response = await axios.post(`${process.env.REACT_APP_API_URL}/collaboration/groups/create/`, {
                     name: name,
                     description: description
-                }, {
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-                    }
                 });
 
                 const data = response.data;
@@ -178,11 +209,113 @@ const Box: React.FC = () => {
     }
 
     /* Selecting the group and setting the state */
-    const handleGroupSelection = (id: number) => {
+    const handleGroupSelection = async (id: number) => {
         const selectedGroup = groups.find(group => group.id === id);
+        if (!selectedGroup) return;
+
         setCurrentGroup(selectedGroup);
         setIsSidebarOpen(false);
-    }
+
+        if (isLoggedIn) {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/checklists/workspace/all/${selectedGroup.id}`);
+
+                /* Map API response to CardInformation interface and calculate progress */
+                const mappedCards: CardInformation[] = await Promise.all(
+                    (response.data || []).map(async (apiCard: any) => {
+                        try {
+                            /* Fetch tasks for this workspace */
+                            const tasksResponse = await axios.get(`${process.env.REACT_APP_API_URL}/checklists/workspace/item/all/${apiCard.id}/`);
+                            
+                            /* Fetch subtasks for each task and calculate progress */
+                            let totalWeight = 0;
+                            let completedWeight = 0;
+                            let taskCount = 0;
+
+                            const tasksWithSubtasks = await Promise.all(
+                                tasksResponse.data.map(async (task: any) => {
+                                    try {
+                                        const subtasksResponse = await axios.get(`${process.env.REACT_APP_API_URL}/checklists/workspace/subitem/all/${task.id}/`);
+                                        
+                                        /* Calculate progress for this task */
+                                        subtasksResponse.data.forEach((subtask: any) => {
+                                            const weight = subtask.weight || 1;
+                                            totalWeight += weight;
+                                            if (subtask.completion_status) {
+                                                completedWeight += weight;
+                                            }
+                                            taskCount++;
+                                        });
+
+                                        return {
+                                            id: task.id.toString(),
+                                            name: task.heading || 'Untitled Task',
+                                            tasks: subtasksResponse.data.map((subtask: any) => ({
+                                                id: subtask.id.toString(),
+                                                text: subtask.content || 'Untitled Item',
+                                                completed: subtask.completion_status || false,
+                                                weight: subtask.weight || 1
+                                            }))
+                                        };
+                                    } catch (error) {
+                                        console.error(`Failed to fetch subtasks for task ${task.id}:`, error);
+                                        return {
+                                            id: task.id.toString(),
+                                            name: task.heading || 'Untitled Task',
+                                            tasks: []
+                                        };
+                                    }
+                                })
+                            );
+
+                            /* Calculate completion percentage */
+                            const completionPercentage = totalWeight ? Math.round((completedWeight / totalWeight) * 100) : 0;
+
+                            return {
+                                id: apiCard.id,
+                                title: apiCard.name || apiCard.title || 'Untitled',
+                                dateCreated: apiCard.dateCreated ? new Date(apiCard.dateCreated) : new Date(),
+                                dateModified: apiCard.dateModified ? new Date(apiCard.dateModified) : new Date(),
+                                completionPercentage: completionPercentage,
+                                taskCount: taskCount,
+                                tasks: tasksWithSubtasks
+                            };
+                        } catch (error) {
+                            console.error(`Failed to fetch tasks for workspace ${apiCard.id}:`, error);
+                            /* Fallback to basic card info if task fetching fails */
+                            return {
+                                id: apiCard.id,
+                                title: apiCard.name || apiCard.title || 'Untitled',
+                                dateCreated: apiCard.dateCreated ? new Date(apiCard.dateCreated) : new Date(),
+                                dateModified: apiCard.dateModified ? new Date(apiCard.dateModified) : new Date(),
+                                completionPercentage: 0,
+                                taskCount: 0,
+                                tasks: []
+                            };
+                        }
+                    })
+                );
+
+                /* Update the selected group with mapped cards */
+                const updatedGroup = {
+                    ...selectedGroup,
+                    cards: mappedCards
+                };
+
+                /* Update current group state */
+                setCurrentGroup(updatedGroup);
+
+                /* Update the group in the groups array as well */
+                setGroups(prevGroups =>
+                    prevGroups.map(group =>
+                        group.id === selectedGroup.id ? updatedGroup : group
+                    )
+                );
+            } catch (error) {
+                console.error('Failed to fetch group cards:', error);
+            }
+        }
+    };
 
     const handleGroupEditing = (id: number) => {
 
@@ -195,11 +328,7 @@ const Box: React.FC = () => {
         if (isLoggedIn) {
             try {
                 /* DELETE method */
-                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`, {
-                    headers: {
-                        'Authorization': `Bearer ` + localStorage.getItem('access_token')
-                    }
-                });
+                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/collaboration/groups/delete/${id}/`);
 
             } catch (error) {
                 console.error('Unable to delete group');
@@ -262,7 +391,7 @@ const Box: React.FC = () => {
     };
 
     /* Adds a checklist, or a workspace, if you prefer to call it that instead */
-    const handleAddChecklist = (title: string, description: string) => {
+    const handleAddChecklist = async (title: string, description: string) => {
         /* If the title is empty then we give a nice looking format of the
             date today as the title */
         const newTitle = title === '' ? new Date().toLocaleDateString('en-US', {
@@ -283,6 +412,18 @@ const Box: React.FC = () => {
             taskCount: 0,
             completionPercentage: 0,
             tasks: []
+        }
+
+        if (isLoggedIn) {
+            try {
+                /* POST method */
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/checklists/workspace/create/${currentGroup.id}/`, {
+                    name: newCardItem.title,
+                    description: description === '' ? "Placeholder" : description
+                });
+            } catch (error) {
+                console.log(error.response?.data)
+            }
         }
 
         const updatedCurrentGroup: GroupInformation = {
@@ -501,6 +642,48 @@ const Box: React.FC = () => {
                         </form>
                     </dialog>
                 </div>
+
+                {/* Delete card confirmation modal */}
+                <dialog id='delete_card_confirmation_form' className='modal'>
+                    <div className='modal-box max-w-sm md:max-w-md'>
+                        <form method='dialog'>
+                            <button className='btn btn-sm btn-circle btn-ghost absolute right-2 top-2'>✕</button>
+                        </form>
+
+                        <h3 className="flex justify-center py-8">Are you sure you want to delete this checklist?</h3>
+
+                        <div className='flex justify-center gap-4'>
+                            <form method='dialog'>
+                                <button
+                                    className='px-4 py-2 bg-red-700 text-sm font-medium text-white rounded-full
+                                            transition-all duration-200 hover:bg-opacity-80 active:bg-opacity-60'
+                                    onClick={() => {
+                                        handleConfirmDelete();
+                                        setCardToDeleteId('');
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </form>
+
+                            <form method='dialog'>
+                                <button 
+                                    className='px-4 py-2 bg-base-300 text-sm font-medium text-base-content/70 rounded-full
+                                             transition-all duration-200 hover:bg-base-300/80 active:bg-base-300/60'
+                                    onClick={() => {
+                                        setCardToDeleteId('');
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </form>
+                        </div>
+
+                        <form method='dialog' className='modal-backdrop'>
+                            <button>Close</button>
+                        </form>
+                    </div>
+                </dialog>
             </div>
         </div>
     );

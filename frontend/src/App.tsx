@@ -16,16 +16,14 @@ function App() {
   const { isLoggedIn } = useAuth();
   return (
     <>
-      <BrowserRouter>
-        <Navigation />
-        <Routes>
-          <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
-          <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
-          <Route path="/home" element={<Home/>}/>
-          <Route path="/about" element={<About/>}/>
-          <Route path="/" element={<Dashboard />} />
-        </Routes>
-      </BrowserRouter>
+      <Navigation />
+      <Routes>
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/" element={<Dashboard />} />
+      </Routes>
     </>
   );
 }
