@@ -17,7 +17,7 @@ const About: React.FC = () => {
                                 Kronathens
                             </h1>
                             <p className='text-2xl text-base-content mb-12'>
-                                Other to-do apps are too complex.
+                                Why complicate your day-to-day management?
                             </p>
                             <div className='text-lg text-base-content/60'>
                                 Let's bring simplicity back to productivity.
