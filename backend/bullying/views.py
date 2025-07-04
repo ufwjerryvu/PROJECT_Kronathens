@@ -24,7 +24,7 @@ def button_pressed(request):
                 'message': {
                     'device_id': device_id,
                     'timestamp': str(timezone.now()),
-                    'message': f'Bullying report from device {device_id}'
+                    'message': f'Report from device {device_id}'
                 }
             }
         )

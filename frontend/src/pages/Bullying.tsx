@@ -25,7 +25,7 @@ const BullyingNotifications = () => {
       setNotifications(prev => [newNotification, ...prev]);
       
       if (Notification.permission === 'granted') {
-        new Notification('🚨 Bullying Report', {
+        new Notification('🚨 Report', {
           body: `Emergency report from ${data.message.device_id}`,
           icon: '🚨'
         });
@@ -206,13 +206,6 @@ const BullyingNotifications = () => {
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <div className="text-center text-gray-600">
-            <p className="mb-2">🔐 Secure • 🔄 Real-time • 📱 Mobile Ready</p>
-            <p className="text-sm">Emergency response system monitoring active devices</p>
-          </div>
-        </div>
       </div>
     </div>
   );
